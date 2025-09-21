@@ -99,6 +99,56 @@ main{min-height:60vh}
 .card .muted{font-size:13px;color:var(--muted)}
 .card-controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
 
+<!-- Honor mobily -->
+<div class="card" data-brand="Honor" data-id="honor90">
+  <div class="card-inner">
+    <img data-src="honor90.png" alt="Honor 90" class="card-img skel-img">
+    <h3>Honor 90</h3>
+    <div class="muted">2025 · 6.7" AMOLED · 128–512GB · Výborný fotoaparát</div>
+    <div class="card-controls">
+      <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+      <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
+    </div>
+  </div>
+</div>
+
+<div class="card" data-brand="Honor" data-id="honor90pro">
+  <div class="card-inner">
+    <img data-src="honor90pro.png" alt="Honor 90 Pro" class="card-img skel-img">
+    <h3>Honor 90 Pro</h3>
+    <div class="muted">2025 · 6.8" AMOLED · 256–1TB · Top foto</div>
+    <div class="card-controls">
+      <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+      <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
+    </div>
+  </div>
+</div>
+
+<div class="card" data-brand="Honor" data-id="honormagic6">
+  <div class="card-inner">
+    <img data-src="honormagic6.png" alt="Honor Magic 6" class="card-img skel-img">
+    <h3>Honor Magic 6</h3>
+    <div class="muted">2026 · 6.9" AMOLED · 512GB · Špičkové foto</div>
+    <div class="card-controls">
+      <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+      <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
+    </div>
+  </div>
+</div>
+
+<div class="card" data-brand="Honor" data-id="honormagic7pro">
+  <div class="card-inner">
+    <img data-src="honormagic7pro.png" alt="Honor Magic 7 Pro" class="card-img skel-img">
+    <h3>Honor Magic 7 Pro</h3>
+    <div class="muted">2026 · 6.9" AMOLED · 512GB · Top foto · 120Hz</div>
+    <div class="card-controls">
+      <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+      <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
+    </div>
+  </div>
+</div>
+
+  
 /* like button & animation */
 .like-btn{background:var(--accent);color:#fff;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
 .like-anim{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:60;border-radius:50%}
@@ -627,6 +677,7 @@ console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑
 </script>
 </body>
 </html>
+
 
 
 

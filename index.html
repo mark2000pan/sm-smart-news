@@ -194,6 +194,58 @@ button{font-family:inherit}
         <div class="pill" id="favoritesCount">Obľúbené: 0</div>
       </div>
 
+/* ================ FUN: Lucky Spin ================== */
+function addLuckySpin() {
+  // pridáme tlačidlo do headeru
+  const btn = document.createElement('button');
+  btn.textContent = '🎲 Lucky Spin';
+  btn.style.marginLeft = '8px';
+  btn.style.padding = '6px 10px';
+  btn.style.borderRadius = '8px';
+  btn.style.border = 'none';
+  btn.style.cursor = 'pointer';
+  btn.style.background = 'var(--accent-2)';
+  btn.style.color = '#fff';
+  document.querySelector('.header-right').appendChild(btn);
+
+  btn.addEventListener('click', () => {
+    const models = ['Galaxy S25 Ultra', 'iPhone 17 Pro Max', 'Xiaomi 15 Ultra', 'Samsung Fold 7', 'iPhone 14 Pro Max'];
+    const chosen = models[Math.floor(Math.random() * models.length)];
+
+    // vytvoríme malý popup
+    const pop = document.createElement('div');
+    pop.textContent = `🎉 Lucky pick: ${chosen}!`;
+    pop.style.position = 'fixed';
+    pop.style.left = '50%';
+    pop.style.top = '20%';
+    pop.style.transform = 'translateX(-50%)';
+    pop.style.background = 'var(--accent)';
+    pop.style.color = '#fff';
+    pop.style.padding = '12px 16px';
+    pop.style.borderRadius = '10px';
+    pop.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3)';
+    pop.style.zIndex = 9999;
+    pop.style.opacity = '0';
+    pop.style.transition = 'opacity 0.4s, transform 0.4s';
+    document.body.appendChild(pop);
+
+    // animácia fade in + drop
+    requestAnimationFrame(() => {
+      pop.style.opacity = '1';
+      pop.style.transform = 'translateX(-50%) translateY(10px)';
+    });
+
+    // odstráni sa po 3 sekundách
+    setTimeout(() => {
+      pop.style.opacity = '0';
+      pop.style.transform = 'translateX(-50%) translateY(-20px)';
+      setTimeout(() => pop.remove(), 400);
+    }, 3000);
+  });
+}
+addLuckySpin();
+
+      
       <!-- cards -->
       <div class="cards-grid" id="cardsGrid" aria-live="polite">
         <!-- vzorová karta (4-5) - neskôr vytvorené JSom alebo tu staticky -->
@@ -627,4 +679,5 @@ console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑
 </script>
 </body>
 </html>
+
 

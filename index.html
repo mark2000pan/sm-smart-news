@@ -1,409 +1,629 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SM – Smart News</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SM – Smart News (Mega verzia)</title>
 <style>
-/* ===== Farby ===== */
-:root {
-    --bg: #f0f0f0;
-    --card: #ffffff;
-    --accent: #2c3e50;
-    --muted: #555;
-    --text: #222;
+/* ================== ZÁKLADNÉ PREMENNÉ ================== */
+:root{
+  --bg:#f0f0f0;
+  --card:#fff;
+  --accent:#2c3e50;
+  --accent-2:#f39c12;
+  --muted:#555;
+  --text:#222;
+  --glass: rgba(255,255,255,0.06);
+  --transition: 300ms;
 }
-:root[data-theme="dark"] {
-    --bg: #111;
-    --card: #222;
-    --accent: #f39c12;
-    --muted: #aaa;
-    --text: #eee;
-}
-
-/* ===== Základ ===== */
-body {
-    font-family: Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    margin: 0;
-    padding: 0;
-    transition: background 0.3s, color 0.3s;
-}
-h1,h2,h3,p { color: var(--text); margin:0; }
-
-/* ===== Header ===== */
-header {
-    background: var(--accent);
-    color: white;
-    padding: 20px;
-    text-align: center;
+:root[data-theme="dark"]{
+  --bg:#0f1113;
+  --card:#151718;
+  --accent:#f39c12;
+  --accent-2:#2c3e50;
+  --muted:#bbb;
+  --text:#e9e9e9;
 }
 
-/* ===== Ticker ===== */
-.ticker {
-    background: var(--accent);
-    color: white;
-    padding: 10px;
-    overflow: hidden;
-    white-space: nowrap;
+/* ================== ZÁKLADNÉ ŠTÝLY ================== */
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Inter, system-ui, -apple-system, "Helvetica Neue", Arial;
+  background:linear-gradient(180deg,var(--bg), #e9eef6 200px);
+  color:var(--text);
+  transition:background var(--transition), color var(--transition);
+  -webkit-font-smoothing:antialiased;
 }
-.ticker p {
-    display: inline-block;
-    animation: tickerAnim 15s linear infinite;
+header{
+  padding:20px 16px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color:#fff;
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;gap:16px;justify-content:space-between;
+  box-shadow:0 4px 18px rgba(0,0,0,0.12);
 }
-@keyframes tickerAnim {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-}
+.header-left{display:flex;gap:12px;align-items:center;}
+.site-title{font-weight:700;font-size:20px;letter-spacing:0.3px}
+.header-right{display:flex;gap:8px;align-items:center}
+#liveClock{font-weight:600;background:rgba(255,255,255,0.08);padding:6px 10px;border-radius:8px}
 
-/* ===== Layout ===== */
-.container {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 20px;
-    padding: 20px;
+/* gradient animácia header */
+@keyframes headerGradient {
+  0%{background-position:0%}
+  50%{background-position:100%}
+  100%{background-position:0%}
 }
-@media (max-width: 880px) {
-    .container { grid-template-columns: 1fr; }
-}
+header{background-size:200% 100%; animation: headerGradient 8s linear infinite}
 
-/* ===== Animácie načítania ===== */
-.article, .right-card {
-    animation: fadeInUp 0.6s ease forwards;
-    opacity: 0;
-}
-.article:nth-child(1) { animation-delay: 0.2s; }
-.right-card:nth-child(1) { animation-delay: 0.4s; }
-.right-card:nth-child(2) { animation-delay: 0.6s; }
-.right-card:nth-child(3) { animation-delay: 0.8s; }
+/* ================== LAYOUT ================== */
+.wrapper{max-width:1150px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:1fr 340px;gap:20px}
+@media (max-width:980px){.wrapper{grid-template-columns:1fr;padding:12px}}
+main{min-height:60vh}
 
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+/* ================== ARTICLE & PARALLAX ================== */
+.article{
+  background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);
+  overflow:hidden;position:relative;
 }
+.article .hero{
+  height:300px;border-radius:10px;overflow:hidden;margin-bottom:12px;position:relative;
+  will-change:transform,background-position;
+  background-position:center; background-size:cover; background-repeat:no-repeat;
+}
+.article h2{margin:0 0 8px 0;font-size:22px}
+.article p{line-height:1.45;color:var(--muted)}
+/* skeleton overlay while image loads */
+.skel{
+  background:linear-gradient(90deg,#eee,#ddd,#eee);
+  background-size:200% 100%; animation: shimmer 1.4s linear infinite;
+  height:100%; width:100%; position:absolute; top:0; left:0;
+}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
-/* ===== Obsah ===== */
-.article, .card, .right-card {
-    background: var(--card);
-    padding:15px;
-    border-radius:8px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15);
-    transition: background 0.3s, color 0.3s, transform 0.3s;
-}
-.article img, .card img { max-width:100%; border-radius:8px; margin-bottom:10px; }
-.article { margin-bottom:15px; }
+/* ================== SEARCH & FILTER ================== */
+.controls{display:flex;gap:8px;align-items:center;margin:14px 0}
+#searchInput{padding:8px 10px;border-radius:8px;border:1px solid #ccc;flex:1}
+#brandFilter{padding:8px;border-radius:8px;border:1px solid #ccc;background:var(--card)}
 
-/* ===== Karty ===== */
-.cards-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:15px;
+/* ================== CARDS GRID ================== */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.card{
+  perspective:1000px; background:var(--card); padding:12px;border-radius:12px;position:relative;
+  transform-style:preserve-3d; transition:transform .25s ease, box-shadow .25s ease;
+  box-shadow:0 4px 14px rgba(0,0,0,0.06);
 }
-.card {
-    text-align:center;
-    cursor:pointer;
-    perspective: 1000px;
-    position: relative;
-}
-.card:hover {
-    transform: rotateY(5deg) scale(1.03);
-    box-shadow:0 8px 20px rgba(0,0,0,0.3);
-}
-.card .like-btn {
-    display: inline-block;
-    margin-top: 8px;
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 6px 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 14px;
-}
-.muted { color: var(--muted); }
+.card-inner{transform-origin:center; transition: transform .18s linear}
+.card:hover{box-shadow:0 14px 40px rgba(0,0,0,0.18)}
+.card img{width:100%;height:150px;border-radius:8px;object-fit:cover;margin-bottom:8px;display:block}
+.card h3{margin:6px 0 6px 0;font-size:16px}
+.card .muted{font-size:13px;color:var(--muted)}
+.card-controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
 
-/* ===== Sidebar ===== */
-.right-card { margin-bottom:15px; }
-.open-btn {
-    display:inline-block;
-    background: var(--accent);
-    color:white;
-    padding:10px 12px;
-    border-radius:6px;
-    text-decoration:none;
-    cursor:pointer;
-    margin-top:8px;
-}
+/* like button & animation */
+.like-btn{background:var(--accent);color:#fff;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
+.like-anim{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:60;border-radius:50%}
+.confetti {position:absolute;width:8px;height:8px;border-radius:2px;opacity:0.95;}
 
-/* ===== Panel Galaxy Watch 8 ===== */
-.panel {
-    position:fixed;
-    right:20px;
-    top:80px;
-    width:340px;
-    max-width:calc(100% - 40px);
-    background: var(--card);
-    border-radius:10px;
-    box-shadow:0 8px 30px rgba(0,0,0,0.25);
-    padding:18px;
-    transform: translateX(420px);
-    transition: transform 0.3s ease;
-    z-index:999;
-}
-.panel.open { transform: translateX(0); }
-.panel .close {
-    float:right;
-    background:none;
-    border:none;
-    font-size:18px;
-    cursor:pointer;
-    color: var(--muted);
-}
-.panel h3 { margin-top:0; }
-.panel img { max-width:100%; border-radius:8px; margin:10px 0; }
-.panel .specs { font-size:14px; color:var(--text); }
+/* favorite star */
+.fav-btn{background:transparent;border:none;cursor:pointer;font-size:18px;color:var(--muted)}
 
-@media(max-width:880px){
-    .panel {
-        left:0; right:0; bottom:0; top:auto;
-        width:100%;
-        border-radius:12px 12px 0 0;
-        transform:translateY(420px);
-    }
-    .panel.open { transform:translateY(0); }
-}
+/* favorite saved pill */
+.pill{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);font-size:13px}
 
-/* ===== Vyhľadávanie ===== */
-.search-bar { margin: 15px 0; text-align:center; }
-#searchInput {
-    padding:8px 12px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    width:60%;
-}
+/* ================== SIDEBAR ================== */
+.sidebar .right-card{background:var(--card);padding:12px;border-radius:12px;margin-bottom:12px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+.small-ticker{height:36px;overflow:hidden;white-space:nowrap}
+.small-ticker p{display:inline-block;animation: smallTicker 10s linear infinite}
+@keyframes smallTicker{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 
-/* ===== Scroll-to-top ===== */
-#scrollTopBtn {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--accent);
-    color: white;
-    border:none;
-    padding:10px 14px;
-    border-radius:50%;
-    cursor:pointer;
-    display:none;
-    box-shadow:0 2px 6px rgba(0,0,0,0.3);
-}
+/* ================== CALCULATOR ================== */
+.calc {display:flex;flex-direction:column;gap:8px}
+.calc input, .calc select {padding:8px;border-radius:8px;border:1px solid #ccc}
 
-/* ===== Prepínač režimu ===== */
-#themeToggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: var(--card);
-    border:1px solid #ccc;
-    padding:8px 12px;
-    border-radius:6px;
-    cursor:pointer;
-}
+/* ================== COMMENTS ================== */
+.comments{margin-top:12px}
+.comment-form{display:flex;gap:8px;flex-wrap:wrap}
+.comment-form input, .comment-form textarea{padding:8px;border-radius:8px;border:1px solid #ccc;width:100%}
+.comment{border-top:1px dashed rgba(0,0,0,0.06);padding:8px 0;color:var(--muted)}
 
-/* ===== Breaking news popup ===== */
-#newsPopup {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    background: var(--accent);
-    color: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    display: none;
-    animation: fadeIn 0.5s ease;
-    box-shadow:0 4px 12px rgba(0,0,0,0.3);
-}
-@keyframes fadeIn {
-    from { opacity:0; transform: translateY(20px); }
-    to { opacity:1; transform: translateY(0); }
-}
+/* ================== PANEL WATCH (slideshow) ================== */
+.panel{position:fixed;right:24px;top:120px;width:340px;background:var(--card);padding:14px;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.2);transform:translateX(420px);transition:transform .28s}
+.panel.open{transform:translateX(0)}
+.panel img{width:100%;border-radius:8px}
+
+/* ================== THEME & TOGGLE ================== */
+#themeToggle{background:var(--card);border:1px solid #ddd;padding:8px;border-radius:8px;cursor:pointer}
+#themeIcon{display:inline-block;transition:transform .3s}
+
+/* animate theme change */
+:root[data-theme="dark"] *{transition:background .35s,color .35s}
+
+/* ================== BREAKING POPUP ================== */
+#breaking{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:12px 14px;border-radius:10px;display:none;z-index:90;box-shadow:0 10px 30px rgba(0,0,0,0.25)}
+#breaking small{display:block;font-size:12px;opacity:0.9}
+
+/* ================== EASTER EGG MESSAGE ================== */
+#egg{position:fixed;left:50%;top:20%;transform:translateX(-50%);background:var(--card);padding:14px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,0.25);display:none;z-index:120}
+
+/* ================== MISC ================== */
+button{font-family:inherit}
+.fade-in{animation:fadeIn .45s ease forwards;opacity:0}
+@keyframes fadeIn{to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 <header>
-    <h1>SM – Smart News</h1>
+  <div class="header-left">
+    <div class="site-title">SM – Smart News</div>
+    <nav aria-label="Hlavné menu">
+      <select id="mainMenu" aria-label="Kategórie">
+        <option value="all">Všetky</option>
+        <option value="smartfony">Smartfóny</option>
+        <option value="hodinky">Hodinky</option>
+        <option value="mapy">Mapy</option>
+      </select>
+    </nav>
+  </div>
+
+  <div class="header-right">
+    <div id="liveClock" aria-live="polite">--:--:--</div>
+    <button id="themeToggle" aria-pressed="false" title="Prepni režim">
+      <span id="themeIcon">🌙</span>
+    </button>
+  </div>
 </header>
 
-<!-- Ticker -->
-<div class="ticker">
-    <p>📢 Novinky: Samsung Galaxy S25 Ultra je tu! | iPhone 17 Pro Max prichádza v roku 2025! | Xiaomi 15 Ultra ohromuje AMOLED displejom!</p>
-</div>
+<div class="wrapper">
+  <main>
+    <article class="article fade-in" id="mainArticle">
+      <div class="hero" id="hero" data-src="galaxy_s25_ultra.jpg">
+        <div class="skel" id="heroSkel"></div>
+      </div>
+      <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
+      <p style="margin-top:8px">Samsung predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong> — výkonný čip, špičkové foto a nádherný displej. Nižšie nájdeš porovnania, komentáre a interaktívne prvky.</p>
 
-<div class="container">
-    <main>
-        <!-- Článok -->
-        <div class="article">
-            <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
-            <img src="galaxy_s25_ultra.jpg" alt="Samsung Galaxy S25 Ultra" loading="lazy">
-            <p>Samsung predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong>. Tento model prináša špičkový výkon, úžasný fotoaparát a displej s vysokou obnovovacou frekvenciou...</p>
-        </div>
+      <!-- controls: search + filter + favorites pill -->
+      <div class="controls" style="margin-top:14px">
+        <input id="searchInput" placeholder="Hľadaj v kartách..." />
+        <select id="brandFilter" aria-label="Filter značky">
+          <option value="all">Všetky značky</option>
+          <option value="Apple">Apple</option>
+          <option value="Samsung">Samsung</option>
+          <option value="Xiaomi">Xiaomi</option>
+        </select>
+        <div class="pill" id="favoritesCount">Obľúbené: 0</div>
+      </div>
 
-        <!-- Vyhľadávanie -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Hľadaj telefón...">
-        </div>
-
-        <!-- Grid kariet -->
-        <div class="cards-grid">
-            <div class="card" onclick="toggleDetails('iphone14')">
-                <img src="iphone14promax.png" alt="iPhone 14 Pro Max" loading="lazy">
-                <h3>iPhone 14 Pro Max</h3>
-                <p class="muted" id="iphone14-short">Klikni pre viac informácií</p>
-                <p id="iphone14-full" style="display:none;" class="muted">Rok: 2022 · Displej: 6.7" · Kapacita: 128–1TB</p>
-                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
+      <!-- cards -->
+      <div class="cards-grid" id="cardsGrid" aria-live="polite">
+        <!-- vzorová karta (4-5) - neskôr vytvorené JSom alebo tu staticky -->
+        <div class="card" data-brand="Apple" data-id="iphone14">
+          <div class="card-inner">
+            <img data-src="iphone14promax.png" alt="iPhone 14 Pro Max" class="card-img skel-img">
+            <h3>iPhone 14 Pro Max</h3>
+            <div class="muted">2022 · 6.7" · 128–1TB</div>
+            <div class="card-controls">
+              <div>
+                <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              </div>
+              <div>
+                <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
+              </div>
             </div>
-
-            <div class="card" onclick="toggleDetails('iphone17')">
-                <img src="iphone17promax.png" alt="iPhone 17 Pro Max" loading="lazy">
-                <h3>iPhone 17 Pro Max</h3>
-                <p class="muted" id="iphone17-short">Klikni pre viac informácií</p>
-                <p id="iphone17-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.9" · Kapacita: 256–1TB</p>
-                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
-            </div>
-
-            <div class="card" onclick="toggleDetails('xiaomi15')">
-                <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra" loading="lazy">
-                <h3>Xiaomi 15 Ultra</h3>
-                <p class="muted" id="xiaomi15-short">Klikni pre viac informácií</p>
-                <p id="xiaomi15-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.8" AMOLED · Kapacita: 256–1TB</p>
-                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
-            </div>
-
-            <div class="card" onclick="toggleDetails('fold7')">
-                <img src="fold7.png" alt="Samsung Fold 7" loading="lazy">
-                <h3>Samsung Fold 7</h3>
-                <p class="muted" id="fold7-short">Klikni pre viac informácií</p>
-                <p id="fold7-full" style="display:none;" class="muted">Rok: 2025 · Displej: 7.6" skladací · Kapacita: 256–1TB</p>
-                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
-            </div>
-
-            <div class="card" onclick="toggleDetails('applewatch')">
-                <img src="applewatch.png" alt="Apple Watch" loading="lazy">
-                <h3>Apple Watch</h3>
-                <p class="muted" id="applewatch-short">Klikni pre viac informácií</p>
-                <p id="applewatch-full" style="display:none;" class="muted">Rok: 2025 · Displej: 1.9" OLED · Funkcie: sledovanie srdca, GPS, SpO₂</p>
-                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
-            </div>
+          </div>
         </div>
-    </main>
 
-    <!-- Sidebar -->
-    <aside>
-        <div class="right-card">
-            <h3>Galaxy Watch 8</h3>
-            <button class="open-btn" id="openGalaxyWatch">Zobraziť info</button>
+        <div class="card" data-brand="Apple" data-id="iphone17">
+          <div class="card-inner">
+            <img data-src="iphone17promax.png" alt="iPhone 17 Pro Max" class="card-img skel-img">
+            <h3>iPhone 17 Pro Max</h3>
+            <div class="muted">2025 · 6.9" · 256–1TB</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
         </div>
-        <div class="right-card">
-            <h3>SM – Smart Map</h3>
-            <a href="https://smsmartmap.web.app" target="_blank" class="open-btn">Otvoriť SM – Smart Map</a>
-        </div>
-        <div class="right-card">
-            <h3>Oficiálne stránky</h3>
-            <a href="https://www.samsung.com" target="_blank" class="open-btn">Samsung</a>
-            <a href="https://www.apple.com" target="_blank" class="open-btn" style="margin-top:5px;">Apple</a>
-        </div>
-    </aside>
-</div>
 
-<!-- Panel Galaxy Watch 8 -->
-<div id="watchPanel" class="panel" aria-hidden="true">
-    <button class="close" id="closePanel">✕</button>
-    <h3>Samsung Galaxy Watch 8</h3>
-    <div class="slideshow">
-        <img src="galaxywatch8.png" alt="Galaxy Watch 8" loading="lazy">
-        <img src="galaxywatch8_side.png" alt="Galaxy Watch 8 - side" style="display:none;" loading="lazy">
+        <div class="card" data-brand="Xiaomi" data-id="xiaomi15">
+          <div class="card-inner">
+            <img data-src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra" class="card-img skel-img">
+            <h3>Xiaomi 15 Ultra</h3>
+            <div class="muted">2025 · 6.8" AMOLED · 256–1TB</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-brand="Samsung" data-id="fold7">
+          <div class="card-inner">
+            <img data-src="fold7.png" alt="Samsung Fold 7" class="card-img skel-img">
+            <h3>Samsung Fold 7</h3>
+            <div class="muted">2025 · 7.6" skladací</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-brand="Samsung" data-id="galaxys25">
+          <div class="card-inner">
+            <img data-src="galaxy_s25_ultra.jpg" alt="Galaxy S25 Ultra" class="card-img skel-img">
+            <h3>Galaxy S25 Ultra</h3>
+            <div class="muted">2025 · 6.9" · Top foto</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- kalkulačka -->
+      <section style="margin-top:16px">
+        <h3>Mini kalkulačka ceny</h3>
+        <div class="calc">
+          <select id="calcModel">
+            <option value="galaxys25">Galaxy S25 Ultra</option>
+            <option value="iphone17">iPhone 17 Pro Max</option>
+            <option value="xiaomi15">Xiaomi 15 Ultra</option>
+          </select>
+          <select id="calcStorage">
+            <option value="128">128 GB</option>
+            <option value="256">256 GB</option>
+            <option value="512">512 GB</option>
+            <option value="1024">1 TB</option>
+          </select>
+          <button id="calcBtn">Vypočítaj orientačnú cenu</button>
+          <div id="calcResult" style="font-weight:600"></div>
+        </div>
+      </section>
+
+      <!-- komentáre -->
+      <section class="comments" aria-label="Komentáre">
+        <h3 style="margin-top:14px">Komentáre</h3>
+        <div class="comment-form" style="margin-top:8px">
+          <input id="commentName" placeholder="Tvoje meno" />
+          <textarea id="commentText" placeholder="Napíš komentár..." rows="3"></textarea>
+          <button id="addCommentBtn">Pridať komentár</button>
+        </div>
+        <div id="commentsList"></div>
+      </section>
+
+    </article>
+  </main>
+
+  <aside class="sidebar">
+    <div class="right-card">
+      <h4>Galaxy Watch 8</h4>
+      <button class="open-btn" id="openPanelBtn">Zobraziť info</button>
     </div>
-    <div class="specs">
-        <p><strong>Displej:</strong> 1.6" AMOLED</p>
-        <p><strong>Batéria:</strong> 300–400 mAh</p>
-        <p><strong>Funkcie:</strong> GPS, monitor srdca, SpO₂, spánok, NFC</p>
-        <p><strong>Odolnosť:</strong> Vodotesné, IP/ATM</p>
-        <p><strong>Kompatibilita:</strong> Android, Samsung</p>
+
+    <div class="right-card">
+      <h4>Mini ticker</h4>
+      <div class="small-ticker"><p>🔔 Novinka: S25 Ultra dostupný | 🔎 Tip: iPhone 17 recenzia | ✨ Dnes: 3 nové updaty</p></div>
     </div>
+
+    <div class="right-card">
+      <h4>Obľúbené</h4>
+      <div id="favoritesList">Žiadne položky</div>
+    </div>
+  </aside>
 </div>
 
-<!-- Tlačidlá -->
-<button id="scrollTopBtn">↑</button>
-<button id="themeToggle">🌙 / ☀️</button>
+<!-- panel watch -->
+<div class="panel" id="watchPanel" aria-hidden="true">
+  <button id="closePanel" style="float:right;background:none;border:none;font-size:18px;cursor:pointer">✕</button>
+  <h3>Samsung Galaxy Watch 8</h3>
+  <div style="margin-top:8px">
+    <img id="watchImg" src="galaxywatch8.png" alt="Galaxy Watch 8">
+    <p class="muted">Displej 1.6" · GPS · SpO₂ · NFC</p>
+  </div>
+</div>
 
-<!-- Breaking news popup -->
-<div id="newsPopup">🚨 Breaking News: Nový Galaxy S25 Ultra sa predáva rekordným tempom!</div>
+<!-- breaking -->
+<div id="breaking" role="status">🚨 <strong>Breaking:</strong> S25 Ultra rekordné predaje <small id="breakCountdown">10</small>s</div>
+
+<!-- easter -->
+<div id="egg"><strong>Tajná správa:</strong> Konami aktivované — gratulujem! 🎉</div>
+
+<!-- elements for confetti -->
+<div id="confettiRoot" style="position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:visible;z-index:9999"></div>
 
 <script>
-// prepína krátky/plný text
-function toggleDetails(id) {
-    const shortEl = document.getElementById(id+'-short');
-    const fullEl = document.getElementById(id+'-full');
-    if(fullEl.style.display==="none"||fullEl.style.display==="") {
-        fullEl.style.display="block"; shortEl.style.display="none";
-    } else {
-        fullEl.style.display="none"; shortEl.style.display="block";
-    }
-}
+/* ================ UTILITY: LocalStorage helpers ================ */
+const LS = {
+  get(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback }catch(e){return fallback} },
+  set(key, val){ localStorage.setItem(key, JSON.stringify(val)) }
+};
 
-// vyhľadávanie
-document.getElementById("searchInput").addEventListener("input",function(){
-    const filter=this.value.toLowerCase();
-    document.querySelectorAll(".cards-grid .card").forEach(card=>{
-        const text=card.querySelector("h3").textContent.toLowerCase();
-        card.style.display=text.includes(filter)?"block":"none";
-    });
+/* ================ LIVE CLOCK ================ */
+function startClock(){
+  const el = document.getElementById('liveClock');
+  function tick(){
+    const d = new Date();
+    const fmt = d.toLocaleTimeString();
+    el.textContent = fmt;
+  }
+  tick(); setInterval(tick,1000);
+}
+startClock();
+
+/* ================ THEME TOGGLE (with memory) ================ */
+const themeBtn = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  LS.set('theme', t);
+  themeBtn.setAttribute('aria-pressed', t==='dark');
+  themeIcon.textContent = t==='dark' ? '☀️' : '🌙';
+  // animate icon small pop
+  themeIcon.style.transform = 'scale(1.15)';
+  setTimeout(()=>themeIcon.style.transform='scale(1)',200);
+}
+const savedTheme = LS.get('theme','light');
+setTheme(savedTheme);
+themeBtn.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
+
+/* ================ SKELETON LOADING + PARALLAX HERO ================ */
+function loadHero(){
+  const hero = document.getElementById('hero');
+  const s = hero.getAttribute('data-src');
+  const skel = document.getElementById('heroSkel');
+  const img = new Image();
+  img.src = s; img.alt = 'Hero image';
+  img.onload = ()=>{ hero.style.backgroundImage = `url('${s}')`; skel.remove(); }
+}
+loadHero();
+window.addEventListener('scroll', ()=> {
+  const hero = document.getElementById('hero');
+  const rect = hero.getBoundingClientRect();
+  if(rect.top < window.innerHeight && rect.bottom > 0){
+    // parallax: move background position
+    const pos = Math.round((rect.top/window.innerHeight)*50);
+    hero.style.backgroundPosition = `center ${50 - pos}%`;
+  }
 });
 
-// panel Galaxy Watch
-const panel=document.getElementById("watchPanel");
-document.getElementById("openGalaxyWatch").onclick=()=>{panel.classList.add("open");};
-document.getElementById("closePanel").onclick=()=>{panel.classList.remove("open");};
-document.addEventListener("keydown",e=>{if(e.key==="Escape")panel.classList.remove("open");});
-
-// slideshow
-let slideIndex=0;
-const slides=document.querySelectorAll(".slideshow img");
-function showSlide(){
-    slides.forEach((img,i)=>img.style.display=(i===slideIndex)?"block":"none");
-    slideIndex=(slideIndex+1)%slides.length;
+/* ================ LAZY LOAD CARD IMAGES (skeleton) ================ */
+function lazyLoadCardImgs(){
+  document.querySelectorAll('.skel-img').forEach(el=>{
+    const src = el.getAttribute('data-src');
+    const image = new Image();
+    image.src = src;
+    image.onload = ()=>{ el.src = src; el.classList.remove('skel-img'); el.style.display='block'; }
+  });
 }
-setInterval(showSlide,3000);
+lazyLoadCardImgs();
 
-// scroll-to-top
-const scrollBtn=document.getElementById("scrollTopBtn");
-window.addEventListener("scroll",()=>{scrollBtn.style.display=window.scrollY>300?"block":"none";});
-scrollBtn.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
+/* ================ LIKE with confetti + animation ================ */
+function handleLike(btn){
+  const span = btn.querySelector('span');
+  span.textContent = parseInt(span.textContent)+1;
+  animateLike(btn);
+  confettiBurst(btn);
+}
+function animateLike(btn){
+  // small floating heart at button position
+  const rect = btn.getBoundingClientRect();
+  const heart = document.createElement('div');
+  heart.textContent = '💖'; heart.style.position='fixed';
+  heart.style.left = (rect.left + rect.width/2) + 'px';
+  heart.style.top = (rect.top - 10) + 'px';
+  heart.style.transform='translate(-50%,-50%) scale(0.6)';
+  heart.style.transition='transform 600ms cubic-bezier(.2,.9,.2,1), opacity 600ms';
+  heart.style.zIndex=9999;
+  document.body.appendChild(heart);
+  requestAnimationFrame(()=> heart.style.transform='translate(-50%,-120%) scale(1.2)');
+  setTimeout(()=>{ heart.style.opacity=0; },600);
+  setTimeout(()=> heart.remove(),900);
+}
+function confettiBurst(sourceBtn){
+  const root = document.getElementById('confettiRoot');
+  const colors = ['#ff4d6d','#ffd166','#6ee7b7','#60a5fa','#c084fc'];
+  const rect = sourceBtn.getBoundingClientRect();
+  for(let i=0;i<18;i++){
+    const conf = document.createElement('div');
+    conf.className='confetti';
+    conf.style.background = colors[Math.floor(Math.random()*colors.length)];
+    conf.style.left = (rect.left + rect.width/2 + (Math.random()*120-60)) + 'px';
+    conf.style.top = (rect.top + (Math.random()*40-20)) + 'px';
+    conf.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+    root.appendChild(conf);
+    // animate
+    const dx = (Math.random()*200-100);
+    const dy = (Math.random()*300+80);
+    conf.animate([
+      { transform:`translate(0,0) rotate(0)`, opacity:1 },
+      { transform:`translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`, opacity:0 }
+    ], { duration: 1200 + Math.random()*600, easing:'cubic-bezier(.2,.8,.2,1)'});
+    setTimeout(()=> conf.remove(), 2000);
+  }
+}
 
-// prepínač témy
-const themeBtn=document.getElementById("themeToggle");
-themeBtn.addEventListener("click",()=>{
-    if(document.documentElement.getAttribute("data-theme")==="dark"){
-        document.documentElement.setAttribute("data-theme","light");
-    } else {
-        document.documentElement.setAttribute("data-theme","dark");
-    }
+/* ================ FAVORITES (LocalStorage) ================ */
+function toggleFav(btn){
+  const card = btn.closest('.card');
+  const id = card.dataset.id;
+  let favs = LS.get('favs', []);
+  if(favs.includes(id)){
+    favs = favs.filter(x=>x!==id); btn.textContent='☆'; btn.setAttribute('aria-pressed','false');
+  } else {
+    favs.push(id); btn.textContent='★'; btn.setAttribute('aria-pressed','true');
+  }
+  LS.set('favs', favs);
+  renderFavs();
+}
+function renderFavs(){
+  const favList = document.getElementById('favoritesList');
+  const favs = LS.get('favs', []);
+  const grid = document.getElementById('cardsGrid');
+  document.getElementById('favoritesCount').textContent = `Obľúbené: ${favs.length}`;
+  if(favs.length===0){ favList.textContent='Žiadne položky'; return; }
+  favList.innerHTML = favs.map(id => {
+    const el = grid.querySelector(`.card[data-id="${id}"] h3`);
+    return el ? `<div>${el.textContent}</div>` : '';
+  }).join('');
+}
+renderFavs();
+
+/* ================ FILTER & SEARCH ================== */
+document.getElementById('searchInput').addEventListener('input', function(){
+  const v = this.value.toLowerCase();
+  document.querySelectorAll('.cards-grid .card').forEach(card=>{
+    const txt = card.querySelector('h3').textContent.toLowerCase();
+    card.style.display = txt.includes(v) ? '' : 'none';
+  });
+});
+document.getElementById('brandFilter').addEventListener('change', function(){
+  const v = this.value;
+  document.querySelectorAll('.cards-grid .card').forEach(card=>{
+    if(v === 'all' ) { card.style.display = ''; return; }
+    card.style.display = (card.dataset.brand === v) ? '' : 'none';
+  });
 });
 
-// like systém
-function addLike(btn){
-    let span=btn.querySelector("span");
-    span.textContent=parseInt(span.textContent)+1;
+/* ================ CARD 3D TILT ================== */
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('mousemove', e=>{
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width/2, cy = rect.height/2;
+    const rx = ((y - cy) / cy) * -6; // rotateX
+    const ry = ((x - cx) / cx) * 6; // rotateY
+    card.querySelector('.card-inner').style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+  card.addEventListener('mouseleave', ()=> card.querySelector('.card-inner').style.transform = '');
+  // click to open details: toggle a simple detail view (just expand text)
+  card.addEventListener('click', ()=>{
+    const brand = card.dataset.brand;
+    alert(`Detail karty: ${card.querySelector('h3').textContent} (${brand})`);
+  });
+});
+
+/* ================ CALCULATOR ================== */
+const basePrices = { galaxys25:1100, iphone17:1299, xiaomi15:899 };
+document.getElementById('calcBtn').addEventListener('click', ()=>{
+  const model = document.getElementById('calcModel').value;
+  const storage = parseInt(document.getElementById('calcStorage').value,10);
+  let price = basePrices[model] || 500;
+  // adjust price by storage
+  if(storage>128) price += (storage/128 - 1)*150;
+  document.getElementById('calcResult').textContent = `Orientačná cena: ~ ${Math.round(price)} €`;
+});
+
+/* ================ COMMENTS (LocalStorage) ================== */
+function renderComments(){
+  const lis = LS.get('comments', []);
+  const wrap = document.getElementById('commentsList');
+  if(!lis.length) return wrap.innerHTML = '<div class="muted">Žiadne komentáre</div>';
+  wrap.innerHTML = lis.map(c => `<div class="comment"><strong>${escapeHtml(c.name)}</strong> <div style="font-size:12px;color:var(--muted)">${new Date(c.time).toLocaleString()}</div><p>${escapeHtml(c.text)}</p></div>`).join('');
+}
+function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+document.getElementById('addCommentBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('commentName').value || 'Anonym';
+  const text = document.getElementById('commentText').value || '';
+  if(!text.trim()) return alert('Napíš prosím komentár.');
+  const arr = LS.get('comments', []);
+  arr.unshift({name, text, time: Date.now()});
+  LS.set('comments', arr);
+  document.getElementById('commentText').value='';
+  renderComments();
+});
+renderComments();
+
+/* ================ PANEL WATCH (open/close) ================== */
+document.getElementById('openPanelBtn').addEventListener('click', ()=>{
+  document.getElementById('watchPanel').classList.add('open');
+  document.getElementById('watchPanel').setAttribute('aria-hidden','false');
+});
+document.getElementById('closePanel').addEventListener('click', ()=>{
+  document.getElementById('watchPanel').classList.remove('open');
+  document.getElementById('watchPanel').setAttribute('aria-hidden','true');
+});
+
+/* ================ BREAKING NEWS POPUP with countdown ================ */
+function showBreaking(){
+  const el = document.getElementById('breaking');
+  const cd = document.getElementById('breakCountdown');
+  let t = 10;
+  el.style.display = 'block';
+  const interval = setInterval(()=>{ t--; cd.textContent = t; if(t<=0){ clearInterval(interval); el.style.display='none'; } },1000);
+}
+// show after a few seconds
+setTimeout(showBreaking, 3500);
+
+/* ================ EASTER EGG: KONAMI CODE ================== */
+const konami = [38,38,40,40,37,39,37,39,66,65]; let kpos=0;
+document.addEventListener('keydown', (e)=>{
+  if(e.keyCode === konami[kpos]){ kpos++; if(kpos === konami.length){ triggerEgg(); kpos=0; } } else kpos = 0;
+});
+function triggerEgg(){
+  const el = document.getElementById('egg');
+  el.style.display='block';
+  setTimeout(()=> el.style.display='none',7000);
 }
 
-// breaking news popup
-setTimeout(()=>{
-    document.getElementById("newsPopup").style.display="block";
-},4000);
-setTimeout(()=>{
-    document.getElementById("newsPopup").style.display="none";
-},12000);
+/* ================ ANIMATED SVG ICONS (small demo) ================ */
+/* create a small animated gear in header */
+(function addSvgIcon(){
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('width',20); svg.setAttribute('height',20); svg.setAttribute('viewBox','0 0 24 24');
+  svg.style.marginLeft='6px';
+  svg.innerHTML = `<g><path fill="white" d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></g>`;
+  svg.style.transition='transform 1s linear';
+  svg.onmouseenter = ()=> svg.style.transform='rotate(90deg)';
+  svg.onmouseleave = ()=> svg.style.transform='rotate(0deg)';
+  document.querySelector('.header-left').appendChild(svg);
+})();
+
+/* ================ INIT: restore likes & favorites from LS (simple) ================ */
+(function restoreState(){
+  // favorites: mark stars
+  const favs = LS.get('favs', []);
+  document.querySelectorAll('.card').forEach(card=>{
+    const id = card.dataset.id;
+    if(favs.includes(id)){
+      const btn = card.querySelector('.fav-btn'); if(btn){ btn.textContent='★'; btn.setAttribute('aria-pressed','true'); }
+    }
+    // likes: load like counts if exist
+    const likes = LS.get('likes', {});
+    if(likes[id]){
+      const span = card.querySelector('.like-btn span'); if(span) span.textContent = likes[id];
+    }
+  });
+  renderFavs();
+})();
+function persistLikeCount(id, count){
+  const likes = LS.get('likes', {});
+  likes[id] = count; LS.set('likes', likes);
+}
+// modify handleLike to persist
+const origHandleLike = handleLike;
+handleLike = function(btn){
+  origHandleLike(btn);
+  const card = btn.closest('.card'), id = card.dataset.id;
+  const span = btn.querySelector('span'); persistLikeCount(id, parseInt(span.textContent));
+};
+
+/* ================ 3D TILT: already bound above; add pointer events for mobile ================ */
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('touchstart', ()=> card.style.transform='scale(1.02)');
+  card.addEventListener('touchend', ()=> card.style.transform='');
+});
+
+/* ================ SMALL UX: close breaking on click ================ */
+document.getElementById('breaking').addEventListener('click', ()=> document.getElementById('breaking').style.display='none');
+
+/* ================ FINISH: small console hint ================ */
+console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑↑↓↓←→←→BA).');
+
 </script>
 </body>
 </html>
-

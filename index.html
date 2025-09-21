@@ -234,7 +234,50 @@
     </div>
 
     <script>
-        function toggleDetails(id) {
-            const shortEl = document.getElementById(id + '-short');
-            const fullEl = document.getElementById(id + '-full');
-            if
+        <script>
+    // prepína krátky / plný text pre karty
+    function toggleDetails(id) {
+        const shortEl = document.getElementById(id + '-short');
+        const fullEl = document.getElementById(id + '-full');
+        if (!shortEl || !fullEl) return;
+
+        if (fullEl.style.display === 'none' || fullEl.style.display === '') {
+            fullEl.style.display = 'block';
+            shortEl.style.display = 'none';
+        } else {
+            fullEl.style.display = 'none';
+            shortEl.style.display = 'block';
+        }
+    }
+
+    // otváranie / zatváranie panelu Galaxy Watch 8
+    const openBtn = document.getElementById('openGalaxyWatch');
+    const panel = document.getElementById('watchPanel');
+    const closeBtn = document.getElementById('closePanel');
+
+    function openPanel() {
+        panel.classList.add('open');
+        panel.setAttribute('aria-hidden','false');
+    }
+
+    function closePanel() {
+        panel.classList.remove('open');
+        panel.setAttribute('aria-hidden','true');
+    }
+
+    openBtn.addEventListener('click', openPanel);
+    closeBtn.addEventListener('click', closePanel);
+
+    // zatvor panel klikom mimo neho
+    document.addEventListener('click', function(e){
+        if (!panel.classList.contains('open')) return;
+        if (!panel.contains(e.target) && e.target !== openBtn) {
+            closePanel();
+        }
+    });
+
+    // zatvor panel stlačením Escape
+    document.addEventListener('keydown', function(e){
+        if (e.key === 'Escape') closePanel();
+    });
+</script>

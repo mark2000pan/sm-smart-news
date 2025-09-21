@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SM – Smart News</title>
     <style>
-        :root{
+        :root {
             --bg: #f0f0f0;
             --card: #ffffff;
             --accent: #2c3e50;
             --muted: #555;
         }
+
         body {
             font-family: Arial, sans-serif;
             background-color: var(--bg);
@@ -18,21 +19,23 @@
             padding: 0;
             color: #222;
         }
+
         header {
             background-color: var(--accent);
             color: white;
             padding: 20px;
             text-align: center;
         }
+
         h1 { margin: 0; }
 
-        /* layout */
         .container {
             display: grid;
             grid-template-columns: 1fr 320px;
             gap: 20px;
             padding: 20px;
         }
+
         @media (max-width: 880px) {
             .container {
                 grid-template-columns: 1fr;
@@ -51,39 +54,33 @@
             box-shadow: 0px 2px 5px rgba(0,0,0,0.12);
         }
 
-        /* karty (telefóny a hodinky) */
+        .article img, .card img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
             gap: 15px;
         }
+
         .card {
             text-align: center;
             transition: transform 0.18s;
             cursor: pointer;
         }
+
         .card:hover { transform: translateY(-4px); }
+
         .muted { color: var(--muted); }
 
-        /* placeholder obrázky */
-        .placeholder-img {
-            width: 140px;
-            height: 140px;
-            background-color: #ddd;
-            margin: 0 auto 10px;
-            border-radius: 8px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #888;
-            font-size: 14px;
-        }
-
-        /* pravé okno / sidebar */
         .right-pane {
             position: relative;
             min-height: 200px;
         }
+
         .right-card {
             background: var(--card);
             border-radius: 8px;
@@ -91,6 +88,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.12);
             margin-bottom: 15px;
         }
+
         .open-btn {
             display: inline-block;
             background: var(--accent);
@@ -117,7 +115,9 @@
             transition: transform 0.28s ease;
             z-index: 999;
         }
+
         .panel.open { transform: translateX(0); }
+
         .panel .close {
             float: right;
             background: transparent;
@@ -126,9 +126,11 @@
             cursor: pointer;
             color: var(--muted);
         }
+
         .panel h3 { margin: 4px 0 8px 0; }
         .panel p { margin: 6px 0; color: var(--muted); line-height: 1.4; }
         .panel .specs { font-size: 14px; color: #333; }
+
         @media (max-width: 880px) {
             .panel {
                 left: 0;
@@ -150,10 +152,10 @@
 
     <div class="container">
         <main>
-            <!-- Článok -->
+            <!-- Článok Samsung Galaxy S25 Ultra -->
             <div class="article">
                 <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
-                <div class="placeholder-img">Galaxy S25 Ultra</div>
+                <img src="galaxy_s25_ultra.jpg" alt="Samsung Galaxy S25 Ultra">
                 <p>Samsung práve predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong>. Tento model prináša špičkový výkon, úžasný fotoaparát a displej s vysokou obnovovacou frekvenciou...</p>
             </div>
 
@@ -161,7 +163,7 @@
             <div class="cards-grid">
                 <!-- iPhone 14 Pro Max -->
                 <div class="card" onclick="toggleDetails('iphone14')">
-                    <div class="placeholder-img">iPhone 14</div>
+                    <img src="iphone14promax.png" alt="iPhone 14 Pro Max">
                     <h3>iPhone 14 Pro Max</h3>
                     <p class="muted" id="iphone14-short">Klikni pre viac informácií</p>
                     <p id="iphone14-full" style="display:none;" class="muted">Rok: 2022 · Displej: 6.7" · Kapacita: 128–1TB</p>
@@ -169,7 +171,7 @@
 
                 <!-- iPhone 17 Pro Max -->
                 <div class="card" onclick="toggleDetails('iphone17')">
-                    <div class="placeholder-img">iPhone 17</div>
+                    <img src="iphone17promax.png" alt="iPhone 17 Pro Max">
                     <h3>iPhone 17 Pro Max</h3>
                     <p class="muted" id="iphone17-short">Klikni pre viac informácií</p>
                     <p id="iphone17-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.9" · Kapacita: 256–1TB</p>
@@ -177,7 +179,7 @@
 
                 <!-- Xiaomi 15 Ultra -->
                 <div class="card" onclick="toggleDetails('xiaomi15')">
-                    <div class="placeholder-img">Xiaomi 15</div>
+                    <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra">
                     <h3>Xiaomi 15 Ultra</h3>
                     <p class="muted" id="xiaomi15-short">Klikni pre viac informácií</p>
                     <p id="xiaomi15-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.8" AMOLED · Kapacita: 256–1TB</p>
@@ -185,7 +187,7 @@
 
                 <!-- Samsung Fold 7 -->
                 <div class="card" onclick="toggleDetails('fold7')">
-                    <div class="placeholder-img">Samsung Fold 7</div>
+                    <img src="fold7.png" alt="Samsung Fold 7">
                     <h3>Samsung Fold 7</h3>
                     <p class="muted" id="fold7-short">Klikni pre viac informácií</p>
                     <p id="fold7-full" style="display:none;" class="muted">Rok: 2025 · Displej: 7.6" skladací · Kapacita: 256–1TB</p>
@@ -193,7 +195,7 @@
 
                 <!-- Apple Watch -->
                 <div class="card" onclick="toggleDetails('applewatch')">
-                    <div class="placeholder-img">Apple Watch</div>
+                    <img src="applewatch.png" alt="Apple Watch">
                     <h3>Apple Watch</h3>
                     <p class="muted" id="applewatch-short">Klikni pre viac informácií</p>
                     <p id="applewatch-full" style="display:none;" class="muted">Rok: 2025 · Displej: 1.9" OLED · Funkcie: sledovanie srdca, GPS, SpO₂</p>
@@ -220,6 +222,7 @@
     <div id="watchPanel" class="panel" role="dialog" aria-hidden="true" aria-labelledby="watchTitle">
         <button class="close" id="closePanel" aria-label="Zatvoriť">✕</button>
         <h3 id="watchTitle">Samsung Galaxy Watch 8</h3>
+        <img src="images/galaxywatch8.png" alt="Galaxy Watch 8" style="max-width:100%; border-radius:8px; margin:10px 0;">
         <p class="muted">Tu sú základné informácie o hodinkách Galaxy Watch 8:</p>
         <div class="specs">
             <p><strong>Displej:</strong> 1.6" AMOLED</p>
@@ -234,6 +237,4 @@
         function toggleDetails(id) {
             const shortEl = document.getElementById(id + '-short');
             const fullEl = document.getElementById(id + '-full');
-            if (!shortEl || !fullEl) return;
-            if (fullEl.style.display === 'none' || fullEl.style.display === '') {
-                fullEl.style
+            if

@@ -10,15 +10,18 @@
     --card: #ffffff;
     --accent: #2c3e50;
     --muted: #555;
+    --text: #222; /* hlavný text */
 }
 body {
     font-family: Arial, sans-serif;
     background-color: var(--bg);
+    color: var(--text);
     margin: 0;
     padding: 0;
-    color: #222;
     transition: background 0.3s, color 0.3s;
 }
+h1,h2,h3,p { color: var(--text); }
+
 header {
     background-color: var(--accent);
     color: white;
@@ -38,7 +41,6 @@ h1 { margin:0; }
 }
 main { min-height:60vh; }
 
-/* Článok a karty */
 .article, .card {
     background-color: var(--card);
     padding:15px;
@@ -108,8 +110,6 @@ main { min-height:60vh; }
 .panel h3 { margin:4px 0 8px 0; }
 .panel p { margin:6px 0; color: var(--muted); line-height:1.4; }
 .panel .specs { font-size:14px; color:#333; }
-
-/* Panel slideshow */
 .panel img { max-width:100%; border-radius:8px; margin:10px 0; }
 
 /* Responsívnosť panelu */
@@ -163,6 +163,16 @@ main { min-height:60vh; }
     display:none;
     box-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
+
+/* Tmavý režim */
+:root[data-theme='dark'] {
+    --bg:#111;
+    --card:#222;
+    --accent:#f39c12;
+    --muted:#ccc;
+    --text:#eee;
+}
+body[data-theme='dark'] { background:#111; color:#eee; }
 </style>
 </head>
 <body>
@@ -345,19 +355,6 @@ themeBtn.addEventListener('click', () => {
     }
 });
 
-// CSS pre tmavý režim
-const styleDark = document.createElement('style');
-styleDark.innerHTML = `
-:root[data-theme='dark'] {
-    --bg:#111;
-    --card:#222;
-    --accent:#f39c12;
-    --muted:#ccc;
-}
-body[data-theme='dark'] { background:#111; color:#eee; }
-`;
-document.head.appendChild(styleDark);
-
 // Slideshow panelu Galaxy Watch
 let slideIndex = 0;
 const slides = document.querySelectorAll('.panel .slideshow img');
@@ -369,3 +366,4 @@ setInterval(showSlide, 3000);
 </script>
 </body>
 </html>
+

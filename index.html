@@ -5,125 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SM – Smart News</title>
 <style>
+/* ===== Farby ===== */
 :root {
     --bg: #f0f0f0;
     --card: #ffffff;
     --accent: #2c3e50;
     --muted: #555;
-    --text: #222; /* hlavný text */
+    --text: #222;
 }
+:root[data-theme="dark"] {
+    --bg: #111;
+    --card: #222;
+    --accent: #f39c12;
+    --muted: #aaa;
+    --text: #eee;
+}
+
+/* ===== Základ ===== */
 body {
     font-family: Arial, sans-serif;
-    background-color: var(--bg);
+    background: var(--bg);
     color: var(--text);
     margin: 0;
     padding: 0;
     transition: background 0.3s, color 0.3s;
 }
-h1,h2,h3,p { color: var(--text); }
+h1,h2,h3,p { color: var(--text); margin:0; }
 
+/* ===== Header ===== */
 header {
-    background-color: var(--accent);
+    background: var(--accent);
     color: white;
     padding: 20px;
     text-align: center;
 }
-h1 { margin:0; }
 
-.container {
-    display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: 20px;
-    padding: 20px;
-}
-@media (max-width: 880px) {
-    .container { grid-template-columns: 1fr; }
-}
-main { min-height:60vh; }
-
-.article, .card {
-    background-color: var(--card);
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:8px;
-    box-shadow:0px 2px 5px rgba(0,0,0,0.12);
-    transition: background 0.3s, color 0.3s;
-}
-.article img, .card img { max-width:100%; border-radius:8px; margin-bottom:10px; }
-.cards-grid {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
-    gap:15px;
-}
-.card {
-    text-align:center;
-    transition: transform 0.18s;
-    cursor:pointer;
-}
-.card:hover { transform: translateY(-4px); }
-.muted { color: var(--muted); }
-
-/* Pravý sidebar */
-.right-pane { position: relative; min-height:200px; }
-.right-card {
-    background: var(--card);
-    border-radius:8px;
-    padding:12px;
-    box-shadow:0 2px 6px rgba(0,0,0,0.12);
-    margin-bottom:15px;
-}
-.open-btn {
-    display:inline-block;
-    background: var(--accent);
-    color:white;
-    padding:10px 12px;
-    border-radius:6px;
-    text-decoration:none;
-    cursor:pointer;
-    margin-top:8px;
-}
-
-/* Panel Galaxy Watch 8 */
-.panel {
-    position:fixed;
-    right:20px;
-    top:80px;
-    width:340px;
-    max-width:calc(100% - 40px);
-    background: var(--card);
-    border-radius:10px;
-    box-shadow:0 8px 30px rgba(0,0,0,0.2);
-    padding:18px;
-    transform: translateX(420px);
-    transition: transform 0.28s ease;
-    z-index:999;
-}
-.panel.open { transform: translateX(0); }
-.panel .close {
-    float:right;
-    background:transparent;
-    border:none;
-    font-size:18px;
-    cursor:pointer;
-    color: var(--muted);
-}
-.panel h3 { margin:4px 0 8px 0; }
-.panel p { margin:6px 0; color: var(--muted); line-height:1.4; }
-.panel .specs { font-size:14px; color:#333; }
-.panel img { max-width:100%; border-radius:8px; margin:10px 0; }
-
-/* Responsívnosť panelu */
-@media(max-width:880px){
-    .panel {
-        left:0; right:0; bottom:0; top:auto;
-        width:100%;
-        border-radius:12px 12px 0 0;
-        transform:translateY(420px);
-    }
-    .panel.open { transform:translateY(0); }
-}
-
-/* Ticker animácia */
+/* ===== Ticker ===== */
 .ticker {
     background: var(--accent);
     color: white;
@@ -140,7 +57,124 @@ main { min-height:60vh; }
     100% { transform: translateX(-100%); }
 }
 
-/* Vyhľadávacie pole */
+/* ===== Layout ===== */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 20px;
+    padding: 20px;
+}
+@media (max-width: 880px) {
+    .container { grid-template-columns: 1fr; }
+}
+
+/* ===== Animácie načítania ===== */
+.article, .right-card {
+    animation: fadeInUp 0.6s ease forwards;
+    opacity: 0;
+}
+.article:nth-child(1) { animation-delay: 0.2s; }
+.right-card:nth-child(1) { animation-delay: 0.4s; }
+.right-card:nth-child(2) { animation-delay: 0.6s; }
+.right-card:nth-child(3) { animation-delay: 0.8s; }
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Obsah ===== */
+.article, .card, .right-card {
+    background: var(--card);
+    padding:15px;
+    border-radius:8px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+    transition: background 0.3s, color 0.3s, transform 0.3s;
+}
+.article img, .card img { max-width:100%; border-radius:8px; margin-bottom:10px; }
+.article { margin-bottom:15px; }
+
+/* ===== Karty ===== */
+.cards-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:15px;
+}
+.card {
+    text-align:center;
+    cursor:pointer;
+    perspective: 1000px;
+    position: relative;
+}
+.card:hover {
+    transform: rotateY(5deg) scale(1.03);
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+}
+.card .like-btn {
+    display: inline-block;
+    margin-top: 8px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+.muted { color: var(--muted); }
+
+/* ===== Sidebar ===== */
+.right-card { margin-bottom:15px; }
+.open-btn {
+    display:inline-block;
+    background: var(--accent);
+    color:white;
+    padding:10px 12px;
+    border-radius:6px;
+    text-decoration:none;
+    cursor:pointer;
+    margin-top:8px;
+}
+
+/* ===== Panel Galaxy Watch 8 ===== */
+.panel {
+    position:fixed;
+    right:20px;
+    top:80px;
+    width:340px;
+    max-width:calc(100% - 40px);
+    background: var(--card);
+    border-radius:10px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.25);
+    padding:18px;
+    transform: translateX(420px);
+    transition: transform 0.3s ease;
+    z-index:999;
+}
+.panel.open { transform: translateX(0); }
+.panel .close {
+    float:right;
+    background:none;
+    border:none;
+    font-size:18px;
+    cursor:pointer;
+    color: var(--muted);
+}
+.panel h3 { margin-top:0; }
+.panel img { max-width:100%; border-radius:8px; margin:10px 0; }
+.panel .specs { font-size:14px; color:var(--text); }
+
+@media(max-width:880px){
+    .panel {
+        left:0; right:0; bottom:0; top:auto;
+        width:100%;
+        border-radius:12px 12px 0 0;
+        transform:translateY(420px);
+    }
+    .panel.open { transform:translateY(0); }
+}
+
+/* ===== Vyhľadávanie ===== */
 .search-bar { margin: 15px 0; text-align:center; }
 #searchInput {
     padding:8px 12px;
@@ -149,7 +183,7 @@ main { min-height:60vh; }
     width:60%;
 }
 
-/* Scroll-to-top button */
+/* ===== Scroll-to-top ===== */
 #scrollTopBtn {
     position: fixed;
     bottom: 30px;
@@ -164,15 +198,35 @@ main { min-height:60vh; }
     box-shadow:0 2px 6px rgba(0,0,0,0.3);
 }
 
-/* Tmavý režim */
-:root[data-theme='dark'] {
-    --bg:#111;
-    --card:#222;
-    --accent:#f39c12;
-    --muted:#ccc;
-    --text:#eee;
+/* ===== Prepínač režimu ===== */
+#themeToggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--card);
+    border:1px solid #ccc;
+    padding:8px 12px;
+    border-radius:6px;
+    cursor:pointer;
 }
-body[data-theme='dark'] { background:#111; color:#eee; }
+
+/* ===== Breaking news popup ===== */
+#newsPopup {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--accent);
+    color: white;
+    padding: 12px 16px;
+    border-radius: 8px;
+    display: none;
+    animation: fadeIn 0.5s ease;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+}
+@keyframes fadeIn {
+    from { opacity:0; transform: translateY(20px); }
+    to { opacity:1; transform: translateY(0); }
+}
 </style>
 </head>
 <body>
@@ -191,7 +245,7 @@ body[data-theme='dark'] { background:#111; color:#eee; }
         <div class="article">
             <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
             <img src="galaxy_s25_ultra.jpg" alt="Samsung Galaxy S25 Ultra" loading="lazy">
-            <p>Samsung práve predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong>. Tento model prináša špičkový výkon, úžasný fotoaparát a displej s vysokou obnovovacou frekvenciou...</p>
+            <p>Samsung predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong>. Tento model prináša špičkový výkon, úžasný fotoaparát a displej s vysokou obnovovacou frekvenciou...</p>
         </div>
 
         <!-- Vyhľadávanie -->
@@ -201,56 +255,58 @@ body[data-theme='dark'] { background:#111; color:#eee; }
 
         <!-- Grid kariet -->
         <div class="cards-grid">
-            <div class="card" role="button" tabindex="0" data-id="iphone14" onclick="toggleDetails('iphone14')">
+            <div class="card" onclick="toggleDetails('iphone14')">
                 <img src="iphone14promax.png" alt="iPhone 14 Pro Max" loading="lazy">
                 <h3>iPhone 14 Pro Max</h3>
                 <p class="muted" id="iphone14-short">Klikni pre viac informácií</p>
                 <p id="iphone14-full" style="display:none;" class="muted">Rok: 2022 · Displej: 6.7" · Kapacita: 128–1TB</p>
+                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
             </div>
 
-            <div class="card" role="button" tabindex="0" data-id="iphone17" onclick="toggleDetails('iphone17')">
+            <div class="card" onclick="toggleDetails('iphone17')">
                 <img src="iphone17promax.png" alt="iPhone 17 Pro Max" loading="lazy">
                 <h3>iPhone 17 Pro Max</h3>
                 <p class="muted" id="iphone17-short">Klikni pre viac informácií</p>
                 <p id="iphone17-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.9" · Kapacita: 256–1TB</p>
+                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
             </div>
 
-            <div class="card" role="button" tabindex="0" data-id="xiaomi15" onclick="toggleDetails('xiaomi15')">
+            <div class="card" onclick="toggleDetails('xiaomi15')">
                 <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra" loading="lazy">
                 <h3>Xiaomi 15 Ultra</h3>
                 <p class="muted" id="xiaomi15-short">Klikni pre viac informácií</p>
                 <p id="xiaomi15-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.8" AMOLED · Kapacita: 256–1TB</p>
+                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
             </div>
 
-            <div class="card" role="button" tabindex="0" data-id="fold7" onclick="toggleDetails('fold7')">
+            <div class="card" onclick="toggleDetails('fold7')">
                 <img src="fold7.png" alt="Samsung Fold 7" loading="lazy">
                 <h3>Samsung Fold 7</h3>
                 <p class="muted" id="fold7-short">Klikni pre viac informácií</p>
                 <p id="fold7-full" style="display:none;" class="muted">Rok: 2025 · Displej: 7.6" skladací · Kapacita: 256–1TB</p>
+                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
             </div>
 
-            <div class="card" role="button" tabindex="0" data-id="applewatch" onclick="toggleDetails('applewatch')">
+            <div class="card" onclick="toggleDetails('applewatch')">
                 <img src="applewatch.png" alt="Apple Watch" loading="lazy">
                 <h3>Apple Watch</h3>
                 <p class="muted" id="applewatch-short">Klikni pre viac informácií</p>
                 <p id="applewatch-full" style="display:none;" class="muted">Rok: 2025 · Displej: 1.9" OLED · Funkcie: sledovanie srdca, GPS, SpO₂</p>
+                <button class="like-btn" onclick="event.stopPropagation(); addLike(this)">❤️ Like (<span>0</span>)</button>
             </div>
         </div>
     </main>
 
-    <!-- Pravý sidebar -->
-    <aside class="right-pane">
+    <!-- Sidebar -->
+    <aside>
         <div class="right-card">
             <h3>Galaxy Watch 8</h3>
             <button class="open-btn" id="openGalaxyWatch">Zobraziť info</button>
         </div>
-
         <div class="right-card">
             <h3>SM – Smart Map</h3>
-            <p class="muted">Klikni pre otvorenie mapy:</p>
             <a href="https://smsmartmap.web.app" target="_blank" class="open-btn">Otvoriť SM – Smart Map</a>
         </div>
-
         <div class="right-card">
             <h3>Oficiálne stránky</h3>
             <a href="https://www.samsung.com" target="_blank" class="open-btn">Samsung</a>
@@ -260,109 +316,93 @@ body[data-theme='dark'] { background:#111; color:#eee; }
 </div>
 
 <!-- Panel Galaxy Watch 8 -->
-<div id="watchPanel" class="panel" role="dialog" aria-hidden="true" aria-labelledby="watchTitle">
-    <button class="close" id="closePanel" aria-label="Zatvoriť">✕</button>
-    <h3 id="watchTitle">Samsung Galaxy Watch 8</h3>
+<div id="watchPanel" class="panel" aria-hidden="true">
+    <button class="close" id="closePanel">✕</button>
+    <h3>Samsung Galaxy Watch 8</h3>
     <div class="slideshow">
         <img src="galaxywatch8.png" alt="Galaxy Watch 8" loading="lazy">
         <img src="galaxywatch8_side.png" alt="Galaxy Watch 8 - side" style="display:none;" loading="lazy">
     </div>
-    <p class="muted">Tu sú základné informácie o hodinkách Galaxy Watch 8:</p>
     <div class="specs">
         <p><strong>Displej:</strong> 1.6" AMOLED</p>
         <p><strong>Batéria:</strong> 300–400 mAh</p>
-        <p><strong>Funkcie:</strong> GPS, monitor srdcovej frekvencie, SpO₂, sledovanie spánku, NFC</p>
-        <p><strong>Odolnosť:</strong> Vodotesné, odolné voči prachu (IP/ATM)</p>
-        <p><strong>Kompatibilita:</strong> Android, Samsung telefóny</p>
+        <p><strong>Funkcie:</strong> GPS, monitor srdca, SpO₂, spánok, NFC</p>
+        <p><strong>Odolnosť:</strong> Vodotesné, IP/ATM</p>
+        <p><strong>Kompatibilita:</strong> Android, Samsung</p>
     </div>
 </div>
 
-<script>
-// prepína krátky / plný text pre karty
-function toggleDetails(id) {
-    const shortEl = document.getElementById(id + '-short');
-    const fullEl = document.getElementById(id + '-full');
-    if (!shortEl || !fullEl) return;
+<!-- Tlačidlá -->
+<button id="scrollTopBtn">↑</button>
+<button id="themeToggle">🌙 / ☀️</button>
 
-    if (fullEl.style.display === 'none' || fullEl.style.display === '') {
-        fullEl.style.display = 'block';
-        shortEl.style.display = 'none';
+<!-- Breaking news popup -->
+<div id="newsPopup">🚨 Breaking News: Nový Galaxy S25 Ultra sa predáva rekordným tempom!</div>
+
+<script>
+// prepína krátky/plný text
+function toggleDetails(id) {
+    const shortEl = document.getElementById(id+'-short');
+    const fullEl = document.getElementById(id+'-full');
+    if(fullEl.style.display==="none"||fullEl.style.display==="") {
+        fullEl.style.display="block"; shortEl.style.display="none";
     } else {
-        fullEl.style.display = 'none';
-        shortEl.style.display = 'block';
+        fullEl.style.display="none"; shortEl.style.display="block";
     }
 }
 
-// filter kariet
-document.getElementById('searchInput').addEventListener('input', function() {
-    const filter = this.value.toLowerCase();
-    document.querySelectorAll('.cards-grid .card').forEach(card => {
-        const text = card.querySelector('h3').textContent.toLowerCase();
-        card.style.display = text.includes(filter) ? 'block' : 'none';
+// vyhľadávanie
+document.getElementById("searchInput").addEventListener("input",function(){
+    const filter=this.value.toLowerCase();
+    document.querySelectorAll(".cards-grid .card").forEach(card=>{
+        const text=card.querySelector("h3").textContent.toLowerCase();
+        card.style.display=text.includes(filter)?"block":"none";
     });
 });
 
-// Panel Galaxy Watch
-const openBtn = document.getElementById('openGalaxyWatch');
-const panel = document.getElementById('watchPanel');
-const closeBtn = document.getElementById('closePanel');
+// panel Galaxy Watch
+const panel=document.getElementById("watchPanel");
+document.getElementById("openGalaxyWatch").onclick=()=>{panel.classList.add("open");};
+document.getElementById("closePanel").onclick=()=>{panel.classList.remove("open");};
+document.addEventListener("keydown",e=>{if(e.key==="Escape")panel.classList.remove("open");});
 
-function openPanel() {
-    panel.classList.add('open');
-    panel.setAttribute('aria-hidden','false');
+// slideshow
+let slideIndex=0;
+const slides=document.querySelectorAll(".slideshow img");
+function showSlide(){
+    slides.forEach((img,i)=>img.style.display=(i===slideIndex)?"block":"none");
+    slideIndex=(slideIndex+1)%slides.length;
 }
-function closePanelFunc() {
-    panel.classList.remove('open');
-    panel.setAttribute('aria-hidden','true');
-}
-openBtn.addEventListener('click', openPanel);
-closeBtn.addEventListener('click', closePanelFunc);
-document.addEventListener('click', function(e){
-    if (!panel.classList.contains('open')) return;
-    if (!panel.contains(e.target) && e.target !== openBtn) closePanelFunc();
-});
-document.addEventListener('keydown', function(e){
-    if (e.key === 'Escape') closePanelFunc();
-});
+setInterval(showSlide,3000);
 
-// Scroll-to-top button
-const scrollBtn = document.createElement('button');
-scrollBtn.id = 'scrollTopBtn';
-scrollBtn.textContent = '↑';
-document.body.appendChild(scrollBtn);
-window.addEventListener('scroll', () => {
-    scrollBtn.style.display = window.scrollY > 300 ? 'block' : 'none';
-});
-scrollBtn.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+// scroll-to-top
+const scrollBtn=document.getElementById("scrollTopBtn");
+window.addEventListener("scroll",()=>{scrollBtn.style.display=window.scrollY>300?"block":"none";});
+scrollBtn.addEventListener("click",()=>window.scrollTo({top:0,behavior:"smooth"}));
 
-// Prepínač motívu
-const themeBtn = document.createElement('button');
-themeBtn.textContent = '🌙 / ☀️';
-themeBtn.style.position = 'fixed';
-themeBtn.style.top = '20px';
-themeBtn.style.right = '20px';
-themeBtn.style.padding = '10px';
-themeBtn.style.borderRadius = '6px';
-themeBtn.style.border = 'none';
-themeBtn.style.cursor = 'pointer';
-document.body.appendChild(themeBtn);
-
-themeBtn.addEventListener('click', () => {
-    if(document.documentElement.getAttribute('data-theme') === 'dark') {
-        document.documentElement.setAttribute('data-theme','light');
+// prepínač témy
+const themeBtn=document.getElementById("themeToggle");
+themeBtn.addEventListener("click",()=>{
+    if(document.documentElement.getAttribute("data-theme")==="dark"){
+        document.documentElement.setAttribute("data-theme","light");
     } else {
-        document.documentElement.setAttribute('data-theme','dark');
+        document.documentElement.setAttribute("data-theme","dark");
     }
 });
 
-// Slideshow panelu Galaxy Watch
-let slideIndex = 0;
-const slides = document.querySelectorAll('.panel .slideshow img');
-function showSlide() {
-    slides.forEach((img, i) => img.style.display = (i === slideIndex) ? 'block' : 'none');
-    slideIndex = (slideIndex + 1) % slides.length;
+// like systém
+function addLike(btn){
+    let span=btn.querySelector("span");
+    span.textContent=parseInt(span.textContent)+1;
 }
-setInterval(showSlide, 3000);
+
+// breaking news popup
+setTimeout(()=>{
+    document.getElementById("newsPopup").style.display="block";
+},4000);
+setTimeout(()=>{
+    document.getElementById("newsPopup").style.display="none";
+},12000);
 </script>
 </body>
 </html>

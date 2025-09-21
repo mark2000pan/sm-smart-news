@@ -88,17 +88,26 @@ main{min-height:60vh}
 /* ================== CARDS GRID ================== */
 .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
 .card{
-  background:var(--card); padding:12px;border-radius:12px;position:relative;
-  transition:transform .25s ease, box-shadow .25s ease;
+  perspective:1000px; background:var(--card); padding:12px;border-radius:12px;position:relative;
+  transform-style:preserve-3d; transition:transform .25s ease, box-shadow .25s ease;
   box-shadow:0 4px 14px rgba(0,0,0,0.06);
 }
+.card-inner{transform-origin:center; transition: transform .18s linear}
 .card:hover{box-shadow:0 14px 40px rgba(0,0,0,0.18)}
 .card img{width:100%;height:150px;border-radius:8px;object-fit:cover;margin-bottom:8px;display:block}
 .card h3{margin:6px 0 6px 0;font-size:16px}
 .card .muted{font-size:13px;color:var(--muted)}
 .card-controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
+
+/* like button & animation */
 .like-btn{background:var(--accent);color:#fff;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
+.like-anim{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:60;border-radius:50%}
+.confetti {position:absolute;width:8px;height:8px;border-radius:2px;opacity:0.95;}
+
+/* favorite star */
 .fav-btn{background:transparent;border:none;cursor:pointer;font-size:18px;color:var(--muted)}
+
+/* favorite saved pill */
 .pill{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);font-size:13px}
 
 /* ================== SIDEBAR ================== */
@@ -107,7 +116,17 @@ main{min-height:60vh}
 .small-ticker p{display:inline-block;animation: smallTicker 10s linear infinite}
 @keyframes smallTicker{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 
-/* ================== PANEL WATCH ================== */
+/* ================== CALCULATOR ================== */
+.calc {display:flex;flex-direction:column;gap:8px}
+.calc input, .calc select {padding:8px;border-radius:8px;border:1px solid #ccc}
+
+/* ================== COMMENTS ================== */
+.comments{margin-top:12px}
+.comment-form{display:flex;gap:8px;flex-wrap:wrap}
+.comment-form input, .comment-form textarea{padding:8px;border-radius:8px;border:1px solid #ccc;width:100%}
+.comment{border-top:1px dashed rgba(0,0,0,0.06);padding:8px 0;color:var(--muted)}
+
+/* ================== PANEL WATCH (slideshow) ================== */
 .panel{position:fixed;right:24px;top:120px;width:340px;background:var(--card);padding:14px;border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,0.2);transform:translateX(420px);transition:transform .28s}
 .panel.open{transform:translateX(0)}
 .panel img{width:100%;border-radius:8px}
@@ -115,13 +134,15 @@ main{min-height:60vh}
 /* ================== THEME & TOGGLE ================== */
 #themeToggle{background:var(--card);border:1px solid #ddd;padding:8px;border-radius:8px;cursor:pointer}
 #themeIcon{display:inline-block;transition:transform .3s}
+
+/* animate theme change */
 :root[data-theme="dark"] *{transition:background .35s,color .35s}
 
 /* ================== BREAKING POPUP ================== */
 #breaking{position:fixed;right:20px;bottom:20px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;padding:12px 14px;border-radius:10px;display:none;z-index:90;box-shadow:0 10px 30px rgba(0,0,0,0.25)}
 #breaking small{display:block;font-size:12px;opacity:0.9}
 
-/* ================== EASTER EGG ================== */
+/* ================== EASTER EGG MESSAGE ================== */
 #egg{position:fixed;left:50%;top:20%;transform:translateX(-50%);background:var(--card);padding:14px;border-radius:10px;box-shadow:0 12px 30px rgba(0,0,0,0.25);display:none;z-index:120}
 
 /* ================== MISC ================== */
@@ -161,6 +182,7 @@ button{font-family:inherit}
       <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
       <p style="margin-top:8px">Samsung predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong> — výkonný čip, špičkové foto a nádherný displej. Nižšie nájdeš porovnania, komentáre a interaktívne prvky.</p>
 
+      <!-- controls: search + filter + favorites pill -->
       <div class="controls" style="margin-top:14px">
         <input id="searchInput" placeholder="Hľadaj v kartách..." />
         <select id="brandFilter" aria-label="Filter značky">
@@ -172,8 +194,73 @@ button{font-family:inherit}
         <div class="pill" id="favoritesCount">Obľúbené: 0</div>
       </div>
 
+      <!-- cards -->
       <div class="cards-grid" id="cardsGrid" aria-live="polite">
-        <!-- Karty sa dajú pridať tu -->
+        <!-- vzorová karta (4-5) - neskôr vytvorené JSom alebo tu staticky -->
+        <div class="card" data-brand="Apple" data-id="iphone14">
+          <div class="card-inner">
+            <img data-src="iphone14promax.png" alt="iPhone 14 Pro Max" class="card-img skel-img">
+            <h3>iPhone 14 Pro Max</h3>
+            <div class="muted">2022 · 6.7" · 128–1TB</div>
+            <div class="card-controls">
+              <div>
+                <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              </div>
+              <div>
+                <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-brand="Apple" data-id="iphone17">
+          <div class="card-inner">
+            <img data-src="iphone17promax.png" alt="iPhone 17 Pro Max" class="card-img skel-img">
+            <h3>iPhone 17 Pro Max</h3>
+            <div class="muted">2025 · 6.9" · 256–1TB</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-brand="Xiaomi" data-id="xiaomi15">
+          <div class="card-inner">
+            <img data-src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra" class="card-img skel-img">
+            <h3>Xiaomi 15 Ultra</h3>
+            <div class="muted">2025 · 6.8" AMOLED · 256–1TB</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-brand="Samsung" data-id="fold7">
+          <div class="card-inner">
+            <img data-src="fold7.png" alt="Samsung Fold 7" class="card-img skel-img">
+            <h3>Samsung Fold 7</h3>
+            <div class="muted">2025 · 7.6" skladací</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" data-brand="Samsung" data-id="galaxys25">
+          <div class="card-inner">
+            <img data-src="galaxy_s25_ultra.jpg" alt="Galaxy S25 Ultra" class="card-img skel-img">
+            <h3>Galaxy S25 Ultra</h3>
+            <div class="muted">2025 · 6.9" · Top foto</div>
+            <div class="card-controls">
+              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
+              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- kalkulačka -->
@@ -228,6 +315,7 @@ button{font-family:inherit}
   </aside>
 </div>
 
+<!-- panel watch -->
 <div class="panel" id="watchPanel" aria-hidden="true">
   <button id="closePanel" style="float:right;background:none;border:none;font-size:18px;cursor:pointer">✕</button>
   <h3>Samsung Galaxy Watch 8</h3>
@@ -237,72 +325,294 @@ button{font-family:inherit}
   </div>
 </div>
 
+<!-- breaking -->
 <div id="breaking" role="status">🚨 <strong>Breaking:</strong> S25 Ultra rekordné predaje <small id="breakCountdown">10</small>s</div>
+
+<!-- easter -->
 <div id="egg"><strong>Tajná správa:</strong> Konami aktivované — gratulujem! 🎉</div>
+
+<!-- elements for confetti -->
 <div id="confettiRoot" style="position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:visible;z-index:9999"></div>
 
 <script>
-// ---------------- UTILITY ----------------
-const LS = { get(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch(e){return f}}, set(k,v){localStorage.setItem(k,JSON.stringify(v))} };
+/* ================ UTILITY: LocalStorage helpers ================ */
+const LS = {
+  get(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback }catch(e){return fallback} },
+  set(key, val){ localStorage.setItem(key, JSON.stringify(val)) }
+};
 
-// ---------------- CLOCK ----------------
-function startClock(){ const el=document.getElementById('liveClock'); function tick(){ el.textContent=(new Date()).toLocaleTimeString(); } tick(); setInterval(tick,1000); }
+/* ================ LIVE CLOCK ================ */
+function startClock(){
+  const el = document.getElementById('liveClock');
+  function tick(){
+    const d = new Date();
+    const fmt = d.toLocaleTimeString();
+    el.textContent = fmt;
+  }
+  tick(); setInterval(tick,1000);
+}
 startClock();
 
-// ---------------- THEME ----------------
-const themeBtn=document.getElementById('themeToggle'), themeIcon=document.getElementById('themeIcon');
-function setTheme(t){ document.documentElement.setAttribute('data-theme',t); LS.set('theme',t); themeBtn.setAttribute('aria-pressed',t==='dark'); themeIcon.textContent=t==='dark'?'☀️':'🌙'; themeIcon.style.transform='scale(1.15)'; setTimeout(()=>themeIcon.style.transform='scale(1)',200);}
-setTheme(LS.get('theme','light'));
-themeBtn.addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+/* ================ THEME TOGGLE (with memory) ================ */
+const themeBtn = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme', t);
+  LS.set('theme', t);
+  themeBtn.setAttribute('aria-pressed', t==='dark');
+  themeIcon.textContent = t==='dark' ? '☀️' : '🌙';
+  // animate icon small pop
+  themeIcon.style.transform = 'scale(1.15)';
+  setTimeout(()=>themeIcon.style.transform='scale(1)',200);
+}
+const savedTheme = LS.get('theme','light');
+setTheme(savedTheme);
+themeBtn.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
 
-// ---------------- HERO IMAGE ----------------
-function loadHero(){ const hero=document.getElementById('hero'); const s=hero.getAttribute('data-src'); const skel=document.getElementById('heroSkel'); const img=new Image(); img.src=s; img.onload=()=>{hero.style.backgroundImage=`url('${s}')`; skel.remove(); } }
+/* ================ SKELETON LOADING + PARALLAX HERO ================ */
+function loadHero(){
+  const hero = document.getElementById('hero');
+  const s = hero.getAttribute('data-src');
+  const skel = document.getElementById('heroSkel');
+  const img = new Image();
+  img.src = s; img.alt = 'Hero image';
+  img.onload = ()=>{ hero.style.backgroundImage = `url('${s}')`; skel.remove(); }
+}
 loadHero();
-window.addEventListener('scroll',()=>{ const hero=document.getElementById('hero'); const rect=hero.getBoundingClientRect(); if(rect.top<window.innerHeight && rect.bottom>0){ hero.style.backgroundPosition=`center ${50-Math.round((rect.top/window.innerHeight)*50)}%`; } });
+window.addEventListener('scroll', ()=> {
+  const hero = document.getElementById('hero');
+  const rect = hero.getBoundingClientRect();
+  if(rect.top < window.innerHeight && rect.bottom > 0){
+    // parallax: move background position
+    const pos = Math.round((rect.top/window.innerHeight)*50);
+    hero.style.backgroundPosition = `center ${50 - pos}%`;
+  }
+});
 
-// ---------------- LAZY LOAD CARD IMAGES ----------------
-function lazyLoadCardImgs(){ document.querySelectorAll('.skel-img').forEach(el=>{ const src=el.getAttribute('data-src'); const image=new Image(); image.src=src; image.onload=()=>{ el.src=src; el.classList.remove('skel-img'); el.style.display='block'; } }); }
+/* ================ LAZY LOAD CARD IMAGES (skeleton) ================ */
+function lazyLoadCardImgs(){
+  document.querySelectorAll('.skel-img').forEach(el=>{
+    const src = el.getAttribute('data-src');
+    const image = new Image();
+    image.src = src;
+    image.onload = ()=>{ el.src = src; el.classList.remove('skel-img'); el.style.display='block'; }
+  });
+}
 lazyLoadCardImgs();
 
-// ---------------- LIKE + CONFETTI ----------------
-function handleLike(btn){ const span=btn.querySelector('span'); span.textContent=parseInt(span.textContent)+1; animateLike(btn); confettiBurst(btn); persistLikeCount(btn.closest('.card').dataset.id,parseInt(span.textContent)); }
-function animateLike(btn){ const rect=btn.getBoundingClientRect(); const heart=document.createElement('div'); heart.textContent='💖'; heart.style.position='fixed'; heart.style.left=(rect.left+rect.width/2)+'px'; heart.style.top=(rect.top-10)+'px'; heart.style.transform='translate(-50%,-50%) scale(0.6)'; heart.style.transition='transform 600ms cubic-bezier(.2,.9,.2,1), opacity 600ms'; heart.style.zIndex=9999; document.body.appendChild(heart); requestAnimationFrame(()=>heart.style.transform='translate(-50%,-120%) scale(1.2)'); setTimeout(()=>heart.style.opacity=0,600); setTimeout(()=>heart.remove(),900); }
-function confettiBurst(sourceBtn){ const root=document.getElementById('confettiRoot'); const colors=['#ff4d6d','#ffd166','#6ee7b7','#60a5fa','#c084fc']; const rect=sourceBtn.getBoundingClientRect(); for(let i=0;i<18;i++){ const conf=document.createElement('div'); conf.className='confetti'; conf.style.background=colors[Math.floor(Math.random()*colors.length)]; conf.style.left=(rect.left+rect.width/2+(Math.random()*120-60))+'px'; conf.style.top=(rect.top+(Math.random()*40-20))+'px'; const dx=(Math.random()*200-100); const dy=(Math.random()*300+80); conf.animate([{transform:`translate(0,0) rotate(0)`, opacity:1},{transform:`translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`,opacity:0}],{duration:1200+Math.random()*600,easing:'cubic-bezier(.2,.8,.2,1)'}); setTimeout(()=>conf.remove(),2000); root.appendChild(conf);} }
+/* ================ LIKE with confetti + animation ================ */
+function handleLike(btn){
+  const span = btn.querySelector('span');
+  span.textContent = parseInt(span.textContent)+1;
+  animateLike(btn);
+  confettiBurst(btn);
+}
+function animateLike(btn){
+  // small floating heart at button position
+  const rect = btn.getBoundingClientRect();
+  const heart = document.createElement('div');
+  heart.textContent = '💖'; heart.style.position='fixed';
+  heart.style.left = (rect.left + rect.width/2) + 'px';
+  heart.style.top = (rect.top - 10) + 'px';
+  heart.style.transform='translate(-50%,-50%) scale(0.6)';
+  heart.style.transition='transform 600ms cubic-bezier(.2,.9,.2,1), opacity 600ms';
+  heart.style.zIndex=9999;
+  document.body.appendChild(heart);
+  requestAnimationFrame(()=> heart.style.transform='translate(-50%,-120%) scale(1.2)');
+  setTimeout(()=>{ heart.style.opacity=0; },600);
+  setTimeout(()=> heart.remove(),900);
+}
+function confettiBurst(sourceBtn){
+  const root = document.getElementById('confettiRoot');
+  const colors = ['#ff4d6d','#ffd166','#6ee7b7','#60a5fa','#c084fc'];
+  const rect = sourceBtn.getBoundingClientRect();
+  for(let i=0;i<18;i++){
+    const conf = document.createElement('div');
+    conf.className='confetti';
+    conf.style.background = colors[Math.floor(Math.random()*colors.length)];
+    conf.style.left = (rect.left + rect.width/2 + (Math.random()*120-60)) + 'px';
+    conf.style.top = (rect.top + (Math.random()*40-20)) + 'px';
+    conf.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
+    root.appendChild(conf);
+    // animate
+    const dx = (Math.random()*200-100);
+    const dy = (Math.random()*300+80);
+    conf.animate([
+      { transform:`translate(0,0) rotate(0)`, opacity:1 },
+      { transform:`translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`, opacity:0 }
+    ], { duration: 1200 + Math.random()*600, easing:'cubic-bezier(.2,.8,.2,1)'});
+    setTimeout(()=> conf.remove(), 2000);
+  }
+}
 
-// ---------------- FAVORITES ----------------
-function toggleFav(btn){ const card=btn.closest('.card'), id=card.dataset.id; let favs=LS.get('favs',[]); if(favs.includes(id)){ favs=favs.filter(x=>x!==id); btn.textContent='☆'; btn.setAttribute('aria-pressed','false'); } else { favs.push(id); btn.textContent='★'; btn.setAttribute('aria-pressed','true'); } LS.set('favs',favs); renderFavs(); }
-function renderFavs(){ const favList=document.getElementById('favoritesList'); const favs=LS.get('favs',[]); const grid=document.getElementById('cardsGrid'); document.getElementById('favoritesCount').textContent=`Obľúbené: ${favs.length}`; if(favs.length===0){favList.textContent='Žiadne položky'; return;} favList.innerHTML=favs.map(id=>{ const el=grid.querySelector(`.card[data-id="${id}"] h3`); return el?`<div>${el.textContent}</div>`:''; }).join(''); }
+/* ================ FAVORITES (LocalStorage) ================ */
+function toggleFav(btn){
+  const card = btn.closest('.card');
+  const id = card.dataset.id;
+  let favs = LS.get('favs', []);
+  if(favs.includes(id)){
+    favs = favs.filter(x=>x!==id); btn.textContent='☆'; btn.setAttribute('aria-pressed','false');
+  } else {
+    favs.push(id); btn.textContent='★'; btn.setAttribute('aria-pressed','true');
+  }
+  LS.set('favs', favs);
+  renderFavs();
+}
+function renderFavs(){
+  const favList = document.getElementById('favoritesList');
+  const favs = LS.get('favs', []);
+  const grid = document.getElementById('cardsGrid');
+  document.getElementById('favoritesCount').textContent = `Obľúbené: ${favs.length}`;
+  if(favs.length===0){ favList.textContent='Žiadne položky'; return; }
+  favList.innerHTML = favs.map(id => {
+    const el = grid.querySelector(`.card[data-id="${id}"] h3`);
+    return el ? `<div>${el.textContent}</div>` : '';
+  }).join('');
+}
 renderFavs();
 
-// ---------------- FILTER & SEARCH ----------------
-document.getElementById('searchInput').addEventListener('input',function(){ const v=this.value.toLowerCase(); document.querySelectorAll('.cards-grid .card').forEach(card=>{ const txt=card.querySelector('h3').textContent.toLowerCase(); card.style.display=txt.includes(v)?'':'none'; }); });
-document.getElementById('brandFilter').addEventListener('change',function(){ const v=this.value; document.querySelectorAll('.cards-grid .card').forEach(card=>{ if(v==='all'){card.style.display=''; return;} card.style.display=(card.dataset.brand===v)?'':'none'; }); });
+/* ================ FILTER & SEARCH ================== */
+document.getElementById('searchInput').addEventListener('input', function(){
+  const v = this.value.toLowerCase();
+  document.querySelectorAll('.cards-grid .card').forEach(card=>{
+    const txt = card.querySelector('h3').textContent.toLowerCase();
+    card.style.display = txt.includes(v) ? '' : 'none';
+  });
+});
+document.getElementById('brandFilter').addEventListener('change', function(){
+  const v = this.value;
+  document.querySelectorAll('.cards-grid .card').forEach(card=>{
+    if(v === 'all' ) { card.style.display = ''; return; }
+    card.style.display = (card.dataset.brand === v) ? '' : 'none';
+  });
+});
 
-// ---------------- CALCULATOR ----------------
-const basePrices={galaxys25:1100, iphone17:1299, xiaomi15:899};
-document.getElementById('calcBtn').addEventListener('click',()=>{ const model=document.getElementById('calcModel').value; const storage=parseInt(document.getElementById('calcStorage').value,10); let price=basePrices[model]||500; if(storage>128) price+=(storage/128-1)*150; document.getElementById('calcResult').textContent=`Orientačná cena: ~ ${Math.round(price)} €`; });
 
-// ---------------- COMMENTS ----------------
-function renderComments(){ const lis=LS.get('comments',[]); const wrap=document.getElementById('commentsList'); if(!lis.length) return wrap.innerHTML='<div class="muted">Žiadne komentáre</div>'; wrap.innerHTML=lis.map(c=>`<div class="comment"><strong>${escapeHtml(c.name)}</strong> <div style="font-size:12px;color:var(--muted)">${new Date(c.time).toLocaleString()}</div><p>${escapeHtml(c.text)}</p></div>`).join(''); }
+  // click to open details: toggle a simple detail view (just expand text)
+  card.addEventListener('click', ()=>{
+    const brand = card.dataset.brand;
+    alert(`Detail karty: ${card.querySelector('h3').textContent} (${brand})`);
+  });
+});
+
+/* ================ CALCULATOR ================== */
+const basePrices = { galaxys25:1100, iphone17:1299, xiaomi15:899 };
+document.getElementById('calcBtn').addEventListener('click', ()=>{
+  const model = document.getElementById('calcModel').value;
+  const storage = parseInt(document.getElementById('calcStorage').value,10);
+  let price = basePrices[model] || 500;
+  // adjust price by storage
+  if(storage>128) price += (storage/128 - 1)*150;
+  document.getElementById('calcResult').textContent = `Orientačná cena: ~ ${Math.round(price)} €`;
+});
+
+/* ================ COMMENTS (LocalStorage) ================== */
+function renderComments(){
+  const lis = LS.get('comments', []);
+  const wrap = document.getElementById('commentsList');
+  if(!lis.length) return wrap.innerHTML = '<div class="muted">Žiadne komentáre</div>';
+  wrap.innerHTML = lis.map(c => `<div class="comment"><strong>${escapeHtml(c.name)}</strong> <div style="font-size:12px;color:var(--muted)">${new Date(c.time).toLocaleString()}</div><p>${escapeHtml(c.text)}</p></div>`).join('');
+}
 function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-document.getElementById('addCommentBtn').addEventListener('click',()=>{ const name=document.getElementById('commentName').value||'Anonym'; const text=document.getElementById('commentText').value||''; if(!text.trim()) return alert('Napíš prosím komentár.'); const arr=LS.get('comments',[]); arr.unshift({name,text,time:Date.now()}); LS.set('comments',arr); document.getElementById('commentText').value=''; renderComments(); });
+document.getElementById('addCommentBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('commentName').value || 'Anonym';
+  const text = document.getElementById('commentText').value || '';
+  if(!text.trim()) return alert('Napíš prosím komentár.');
+  const arr = LS.get('comments', []);
+  arr.unshift({name, text, time: Date.now()});
+  LS.set('comments', arr);
+  document.getElementById('commentText').value='';
+  renderComments();
+});
 renderComments();
 
-// ---------------- PANEL WATCH ----------------
-document.getElementById('openPanelBtn').addEventListener('click',()=>{ document.getElementById('watchPanel').classList.add('open'); document.getElementById('watchPanel').setAttribute('aria-hidden','false'); });
-document.getElementById('closePanel').addEventListener('click',()=>{ document.getElementById('watchPanel').classList.remove('open'); document.getElementById('watchPanel').setAttribute('aria-hidden','true'); });
+/* ================ PANEL WATCH (open/close) ================== */
+document.getElementById('openPanelBtn').addEventListener('click', ()=>{
+  document.getElementById('watchPanel').classList.add('open');
+  document.getElementById('watchPanel').setAttribute('aria-hidden','false');
+});
+document.getElementById('closePanel').addEventListener('click', ()=>{
+  document.getElementById('watchPanel').classList.remove('open');
+  document.getElementById('watchPanel').setAttribute('aria-hidden','true');
+});
 
-// ---------------- BREAKING ----------------
-function showBreaking(){ const el=document.getElementById('breaking'); const cd=document.getElementById('breakCountdown'); let t=10; el.style.display='block'; const interval=setInterval(()=>{ t--; cd.textContent=t; if(t<=0){ clearInterval(interval); el.style.display='none'; } },1000); }
-setTimeout(showBreaking,3500);
+/* ================ BREAKING NEWS POPUP with countdown ================ */
+function showBreaking(){
+  const el = document.getElementById('breaking');
+  const cd = document.getElementById('breakCountdown');
+  let t = 10;
+  el.style.display = 'block';
+  const interval = setInterval(()=>{ t--; cd.textContent = t; if(t<=0){ clearInterval(interval); el.style.display='none'; } },1000);
+}
+// show after a few seconds
+setTimeout(showBreaking, 3500);
 
-// ---------------- EASTER EGG ----------------
-const konami=[38,38,40,40,37,39,37,39,66,65]; let kpos=0;
-document.addEventListener('keydown',(e)=>{ if(e.keyCode===konami[kpos]){ kpos++; if(kpos===konami.length){ triggerEgg(); kpos=0; } } else kpos=0; });
-function triggerEgg(){ const el=document.getElementById('egg'); el.style.display='block'; setTimeout(()=>el.style.display='none',7000); }
+/* ================ EASTER EGG: KONAMI CODE ================== */
+const konami = [38,38,40,40,37,39,37,39,66,65]; let kpos=0;
+document.addEventListener('keydown', (e)=>{
+  if(e.keyCode === konami[kpos]){ kpos++; if(kpos === konami.length){ triggerEgg(); kpos=0; } } else kpos = 0;
+});
+function triggerEgg(){
+  const el = document.getElementById('egg');
+  el.style.display='block';
+  setTimeout(()=> el.style.display='none',7000);
+}
 
-// ---------------- INIT ----------------
+/* ================ ANIMATED SVG ICONS (small demo) ================ */
+/* create a small animated gear in header */
+(function addSvgIcon(){
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns,'svg');
+  svg.setAttribute('width',20); svg.setAttribute('height',20); svg.setAttribute('viewBox','0 0 24 24');
+  svg.style.marginLeft='6px';
+  svg.innerHTML = `<g><path fill="white" d="M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></g>`;
+  svg.style.transition='transform 1s linear';
+  svg.onmouseenter = ()=> svg.style.transform='rotate(90deg)';
+  svg.onmouseleave = ()=> svg.style.transform='rotate(0deg)';
+  document.querySelector('.header-left').appendChild(svg);
+})();
+
+/* ================ INIT: restore likes & favorites from LS (simple) ================ */
+(function restoreState(){
+  // favorites: mark stars
+  const favs = LS.get('favs', []);
+  document.querySelectorAll('.card').forEach(card=>{
+    const id = card.dataset.id;
+    if(favs.includes(id)){
+      const btn = card.querySelector('.fav-btn'); if(btn){ btn.textContent='★'; btn.setAttribute('aria-pressed','true'); }
+    }
+    // likes: load like counts if exist
+    const likes = LS.get('likes', {});
+    if(likes[id]){
+      const span = card.querySelector('.like-btn span'); if(span) span.textContent = likes[id];
+    }
+  });
+  renderFavs();
+})();
+function persistLikeCount(id, count){
+  const likes = LS.get('likes', {});
+  likes[id] = count; LS.set('likes', likes);
+}
+// modify handleLike to persist
+const origHandleLike = handleLike;
+handleLike = function(btn){
+  origHandleLike(btn);
+  const card = btn.closest('.card'), id = card.dataset.id;
+  const span = btn.querySelector('span'); persistLikeCount(id, parseInt(span.textContent));
+};
+
+/* ================ 3D TILT: already bound above; add pointer events for mobile ================ */
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('touchstart', ()=> card.style.transform='scale(1.02)');
+  card.addEventListener('touchend', ()=> card.style.transform='');
+});
+
+/* ================ SMALL UX: close breaking on click ================ */
+document.getElementById('breaking').addEventListener('click', ()=> document.getElementById('breaking').style.display='none');
+
+/* ================ FINISH: small console hint ================ */
 console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑↑↓↓←→←→BA).');
+
 </script>
 </body>
 </html>

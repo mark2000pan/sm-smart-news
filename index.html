@@ -487,7 +487,18 @@ document.getElementById('brandFilter').addEventListener('change', function(){
   });
 });
 
-
+/* ================ CARD 3D TILT ================== */
+document.querySelectorAll('.card').forEach(card=>{
+  card.addEventListener('mousemove', e=>{
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const cx = rect.width/2, cy = rect.height/2;
+    const rx = ((y - cy) / cy) * -6; // rotateX
+    const ry = ((x - cx) / cx) * 6; // rotateY
+    card.querySelector('.card-inner').style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+  });
+  card.addEventListener('mouseleave', ()=> card.querySelector('.card-inner').style.transform = '');
   // click to open details: toggle a simple detail view (just expand text)
   card.addEventListener('click', ()=>{
     const brand = card.dataset.brand;
@@ -616,3 +627,4 @@ console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑
 </script>
 </body>
 </html>
+

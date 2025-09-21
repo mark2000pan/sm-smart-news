@@ -29,12 +29,10 @@
         /* layout */
         .container {
             display: grid;
-            grid-template-columns: 1fr 320px; /* main + right sidebar */
+            grid-template-columns: 1fr 320px;
             gap: 20px;
             padding: 20px;
         }
-
-        /* keď je obrazovka úzka, sidebar prejde dolu */
         @media (max-width: 880px) {
             .container {
                 grid-template-columns: 1fr;
@@ -52,12 +50,8 @@
             border-radius: 8px;
             box-shadow: 0px 2px 5px rgba(0,0,0,0.12);
         }
-        .article img {
-            max-width: 100%;
-            border-radius: 8px;
-        }
 
-        /* karty (telefóny) */
+        /* karty (telefóny a hodinky) */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
@@ -69,17 +63,23 @@
             cursor: pointer;
         }
         .card:hover { transform: translateY(-4px); }
-
-        .card img {
-            width: 140px;
-            height: auto;
-            margin-bottom: 10px;
-            object-fit: contain;
-        }
-
         .muted { color: var(--muted); }
 
-        /* pravé okno - menič / tlačidlo */
+        /* placeholder obrázky */
+        .placeholder-img {
+            width: 140px;
+            height: 140px;
+            background-color: #ddd;
+            margin: 0 auto 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        /* pravé okno / sidebar */
         .right-pane {
             position: relative;
             min-height: 200px;
@@ -89,6 +89,7 @@
             border-radius: 8px;
             padding: 12px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            margin-bottom: 15px;
         }
         .open-btn {
             display: inline-block;
@@ -101,7 +102,7 @@
             margin-top: 8px;
         }
 
-        /* Sidebar panel (hidden by default) */
+        /* Panel Galaxy Watch 8 */
         .panel {
             position: fixed;
             right: 20px;
@@ -117,8 +118,6 @@
             z-index: 999;
         }
         .panel.open { transform: translateX(0); }
-
-        /* close button */
         .panel .close {
             float: right;
             background: transparent;
@@ -127,8 +126,9 @@
             cursor: pointer;
             color: var(--muted);
         }
-
-        /* mobile: panel ako spodný "sheet" */
+        .panel h3 { margin: 4px 0 8px 0; }
+        .panel p { margin: 6px 0; color: var(--muted); line-height: 1.4; }
+        .panel .specs { font-size: 14px; color: #333; }
         @media (max-width: 880px) {
             .panel {
                 left: 0;
@@ -141,10 +141,6 @@
             }
             .panel.open { transform: translateY(0); }
         }
-
-        .panel h3 { margin: 4px 0 8px 0; }
-        .panel p { margin: 6px 0; color: var(--muted); line-height: 1.4; }
-        .panel .specs { font-size: 14px; color: #333; }
     </style>
 </head>
 <body>
@@ -154,120 +150,90 @@
 
     <div class="container">
         <main>
-            <!-- Článok o Samsungu -->
+            <!-- Článok -->
             <div class="article">
                 <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
-                <img src="galaxy_s25_ultra.jpg" alt="Samsung Galaxy S25 Ultra">
-                <p>Samsung práve predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong>. Tento model prináša špičkový výkon, úžasný fotoaparát a displej s vysokou obnovovacou frekvenciou. Novinka je vybavená pokročilou kamerou s viacerými objektívmi, super rýchlym procesorom a veľkou batériou pre dlhú výdrž.</p>
+                <div class="placeholder-img">Galaxy S25 Ultra</div>
+                <p>Samsung práve predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong>. Tento model prináša špičkový výkon, úžasný fotoaparát a displej s vysokou obnovovacou frekvenciou...</p>
             </div>
 
-            <!-- Grid kariet telefónov -->
+            <!-- Grid kariet -->
             <div class="cards-grid">
                 <!-- iPhone 14 Pro Max -->
                 <div class="card" onclick="toggleDetails('iphone14')">
-                    <img src="iphone14promax.png" alt="iPhone 14 Pro Max">
+                    <div class="placeholder-img">iPhone 14</div>
                     <h3>iPhone 14 Pro Max</h3>
                     <p class="muted" id="iphone14-short">Klikni pre viac informácií</p>
-                    <p id="iphone14-full" style="display:none;" class="muted">
-                        Rok: 2022 · Displej: 6.7" · Kapacita: 128–1TB
-                    </p>
+                    <p id="iphone14-full" style="display:none;" class="muted">Rok: 2022 · Displej: 6.7" · Kapacita: 128–1TB</p>
                 </div>
 
                 <!-- iPhone 17 Pro Max -->
                 <div class="card" onclick="toggleDetails('iphone17')">
-                    <img src="iphone17promax.png" alt="iPhone 17 Pro Max">
+                    <div class="placeholder-img">iPhone 17</div>
                     <h3>iPhone 17 Pro Max</h3>
                     <p class="muted" id="iphone17-short">Klikni pre viac informácií</p>
-                    <p id="iphone17-full" style="display:none;" class="muted">
-                        Rok: 2025 · Displej: 6.9" · Kapacita: 256–1TB
-                    </p>
+                    <p id="iphone17-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.9" · Kapacita: 256–1TB</p>
                 </div>
 
                 <!-- Xiaomi 15 Ultra -->
                 <div class="card" onclick="toggleDetails('xiaomi15')">
-                    <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra">
+                    <div class="placeholder-img">Xiaomi 15</div>
                     <h3>Xiaomi 15 Ultra</h3>
                     <p class="muted" id="xiaomi15-short">Klikni pre viac informácií</p>
-                    <p id="xiaomi15-full" style="display:none;" class="muted">
-                        Rok: 2025 · Displej: 6.8" AMOLED · Kapacita: 256–1TB
-                    </p>
+                    <p id="xiaomi15-full" style="display:none;" class="muted">Rok: 2025 · Displej: 6.8" AMOLED · Kapacita: 256–1TB</p>
+                </div>
+
+                <!-- Samsung Fold 7 -->
+                <div class="card" onclick="toggleDetails('fold7')">
+                    <div class="placeholder-img">Samsung Fold 7</div>
+                    <h3>Samsung Fold 7</h3>
+                    <p class="muted" id="fold7-short">Klikni pre viac informácií</p>
+                    <p id="fold7-full" style="display:none;" class="muted">Rok: 2025 · Displej: 7.6" skladací · Kapacita: 256–1TB</p>
+                </div>
+
+                <!-- Apple Watch -->
+                <div class="card" onclick="toggleDetails('applewatch')">
+                    <div class="placeholder-img">Apple Watch</div>
+                    <h3>Apple Watch</h3>
+                    <p class="muted" id="applewatch-short">Klikni pre viac informácií</p>
+                    <p id="applewatch-full" style="display:none;" class="muted">Rok: 2025 · Displej: 1.9" OLED · Funkcie: sledovanie srdca, GPS, SpO₂</p>
                 </div>
             </div>
         </main>
 
-        <!-- Pravé okno (sidebar area) -->
+        <!-- Pravý sidebar -->
         <aside class="right-pane">
             <div class="right-card">
-                <h3>Rýchle ovládanie</h3>
-                <p class="muted">Klikni pre zobrazenie informácií o hodinkách.</p>
-                <button class="open-btn" id="openGalaxyWatch">Galaxy Watch 8 – info</button>
+                <h3>Galaxy Watch 8</h3>
+                <button class="open-btn" id="openGalaxyWatch">Zobraziť info</button>
+            </div>
+
+            <div class="right-card">
+                <h3>SM – Smart Map</h3>
+                <p class="muted">Klikni pre otvorenie mapy:</p>
+                <a href="https://smsmartmap.web.app" target="_blank" class="open-btn">Otvoriť SM – Smart Map</a>
             </div>
         </aside>
     </div>
 
-    <!-- Panel, ktorý sa otvorí po kliknutí (Galaxy Watch 8 info) -->
+    <!-- Panel Galaxy Watch 8 -->
     <div id="watchPanel" class="panel" role="dialog" aria-hidden="true" aria-labelledby="watchTitle">
         <button class="close" id="closePanel" aria-label="Zatvoriť">✕</button>
         <h3 id="watchTitle">Samsung Galaxy Watch 8</h3>
-        <p class="muted">Tu sú základné informácie o hodinkách Galaxy Watch 8. Panel môže slúžiť na rýchle zobrazenie špecifikácií a krátkych poznámok.</p>
-
+        <p class="muted">Tu sú základné informácie o hodinkách Galaxy Watch 8:</p>
         <div class="specs">
-            <p><strong>Displej:</strong> 1.6" AMOLED (približne, podľa modelu)</p>
-            <p><strong>Batéria:</strong> 300–400 mAh (závisí od veľkosti a využitia)</p>
-            <p><strong>Funkcie:</strong> GPS, monitor srdcovej frekvencie, SpO₂, sledovanie spánku, NFC pre platby</p>
-            <p><strong>Odolnosť:</strong> Vodotesné, odolné voči prachu (štandard IP/ATM podľa modelu)</p>
-            <p><strong>Kompatibilita:</strong> Android (najmä Samsung telefóny s plnou funkčnosťou)</p>
+            <p><strong>Displej:</strong> 1.6" AMOLED</p>
+            <p><strong>Batéria:</strong> 300–400 mAh</p>
+            <p><strong>Funkcie:</strong> GPS, monitor srdcovej frekvencie, SpO₂, sledovanie spánku, NFC</p>
+            <p><strong>Odolnosť:</strong> Vodotesné, odolné voči prachu (IP/ATM)</p>
+            <p><strong>Kompatibilita:</strong> Android, Samsung telefóny</p>
         </div>
-
-        <p class="muted" style="margin-top:10px;">Tip: môžeš sem doplniť vlastné obrázky alebo odkaz na recenziu.</p>
     </div>
 
     <script>
-        // toggle details for cards
         function toggleDetails(id) {
             const shortEl = document.getElementById(id + '-short');
             const fullEl = document.getElementById(id + '-full');
             if (!shortEl || !fullEl) return;
             if (fullEl.style.display === 'none' || fullEl.style.display === '') {
-                fullEl.style.display = 'block';
-                shortEl.style.display = 'none';
-            } else {
-                fullEl.style.display = 'none';
-                shortEl.style.display = 'block';
-            }
-        }
-
-        // panel (Galaxy Watch 😎
-        const openBtn = document.getElementById('openGalaxyWatch');
-        const panel = document.getElementById('watchPanel');
-        const closeBtn = document.getElementById('closePanel');
-
-        function openPanel() {
-            panel.classList.add('open');
-            panel.setAttribute('aria-hidden','false');
-        }
-        function closePanel() {
-            panel.classList.remove('open');
-            panel.setAttribute('aria-hidden','true');
-        }
-
-        openBtn.addEventListener('click', openPanel);
-        closeBtn.addEventListener('click', closePanel);
-
-        // zatváranie klikom mimo panelu (desktop)
-        document.addEventListener('click', function(e){
-            if (!panel.classList.contains('open')) return;
-            // ak klik nie je v paneli ani na tlačidlo otvorenia, zatvoríme
-            if (!panel.contains(e.target) && e.target !== openBtn) {
-                closePanel();
-            }
-        });
-
-        // zatváranie ESC
-        document.addEventListener('keydown', function(e){
-            if (e.key === 'Escape' && panel.classList.contains('open')) closePanel();
-        });
-    </script>
-</body>
-</html>
-
+                fullEl.style

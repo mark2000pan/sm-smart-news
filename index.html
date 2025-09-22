@@ -325,49 +325,6 @@ function lazyLoadCardImgs(){
 }
 lazyLoadCardImgs();
 
-/* ================ LIKE with confetti + animation ================ */
-function handleLike(btn){
-  const span = btn.querySelector('span');
-  span.textContent = parseInt(span.textContent)+1;
-  animateLike(btn);
-  confettiBurst(btn);
-  persistLikeCount(btn.closest('.card').dataset.id, parseInt(span.textContent));
-}
-function animateLike(btn){
-  const rect = btn.getBoundingClientRect();
-  const heart = document.createElement('div');
-  heart.textContent = '💖'; heart.style.position='fixed';
-  heart.style.left = (rect.left + rect.width/2) + 'px';
-  heart.style.top = (rect.top - 10) + 'px';
-  heart.style.transform='translate(-50%,-50%) scale(0.6)';
-  heart.style.transition='transform 600ms cubic-bezier(.2,.9,.2,1), opacity 600ms';
-  heart.style.zIndex=9999;
-  document.body.appendChild(heart);
-  requestAnimationFrame(()=> heart.style.transform='translate(-50%,-120%) scale(1.2)');
-  setTimeout(()=>{ heart.style.opacity=0; },600);
-  setTimeout(()=> heart.remove(),900);
-}
-function confettiBurst(sourceBtn){
-  const root = document.getElementById('confettiRoot');
-  const colors = ['#ff4d6d','#ffd166','#6ee7b7','#60a5fa','#c084fc'];
-  const rect = sourceBtn.getBoundingClientRect();
-  for(let i=0;i<18;i++){
-    const conf = document.createElement('div');
-    conf.className='confetti';
-    conf.style.background = colors[Math.floor(Math.random()*colors.length)];
-    conf.style.left = (rect.left + rect.width/2 + (Math.random()*120-60)) + 'px';
-    conf.style.top = (rect.top + (Math.random()*40-20)) + 'px';
-    conf.style.transform = `translateY(0) rotate(${Math.random()*360}deg)`;
-    root.appendChild(conf);
-    const dx = (Math.random()*200-100);
-    const dy = (Math.random()*300+80);
-    conf.animate([
-      { transform:`translate(0,0) rotate(0)`, opacity:1 },
-      { transform:`translate(${dx}px, ${dy}px) rotate(${Math.random()*720}deg)`, opacity:0 }
-    ], { duration: 1200 + Math.random()*600, easing:'cubic-bezier(.2,.8,.2,1)'});
-    setTimeout(()=> conf.remove(), 2000);
-  }
-}
 
 /* ================ FAVORITES (LocalStorage) ================ */
 function toggleFav(btn){
@@ -461,16 +418,6 @@ function showBreaking(){
 }
 setTimeout(showBreaking, 3500);
 
-/* ================ EASTER EGG: KONAMI CODE ================== */
-const konami = [38,38,40,40,37,39,37,39,66,65]; let kpos=0;
-document.addEventListener('keydown', (e)=>{
-  if(e.keyCode === konami[kpos]){ kpos++; if(kpos === konami.length){ triggerEgg(); kpos=0; } } else kpos = 0;
-});
-function triggerEgg(){
-  const el = document.getElementById('egg');
-  el.style.display='block';
-  setTimeout(()=> el.style.display='none',7000);
-}
 
 /* ================ 3D TILT & MOBILE ================== */
 document.querySelectorAll('.card').forEach(card=>{
@@ -493,4 +440,5 @@ console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑
 </script>
 </body>
 </html>
+
 

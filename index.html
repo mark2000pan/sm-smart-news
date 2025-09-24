@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>SM – Smart News</title>
 <style>
 :root{
@@ -10,16 +10,16 @@
   --text:#222; --muted:#555; --transition:300ms;
 }
 body{
-  margin:0; font-family:Arial, sans-serif; background:var(--bg); color:var(--text);
+  margin:0; font-family:Arial,sans-serif; background:var(--bg); color:var(--text);
 }
 header{
   padding:16px; background:var(--accent); color:#fff; display:flex; justify-content:space-between; align-items:center;
 }
 header select, header button{padding:6px; border-radius:6px; border:none;}
-.wrapper{max-width:800px; margin:20px auto; padding:0 16px;}
+.wrapper{max-width:900px; margin:20px auto; padding:0 16px;}
 .article{background:var(--card); padding:16px; border-radius:10px; margin-bottom:20px;}
 .article .hero{width:100%; height:200px; background-size:cover; background-position:center; border-radius:8px; margin-bottom:12px;}
-.cards-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.cards-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;}
 .card{background:var(--card); padding:12px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
 .card img{width:100%; border-radius:6px; margin-bottom:6px;}
 .controls{display:flex; gap:8px; margin:12px 0;}
@@ -42,7 +42,7 @@ header select, header button{padding:6px; border-radius:6px; border:none;}
 
 <div class="wrapper">
   <article class="article">
-    <div class="hero" id="hero" style="background-image:url('galaxy_s25_ultra.jpg')"></div>
+    <div class="hero" id="hero" style="background-image:url('galaxys25_ultra.png')"></div>
     <h2>Samsung Galaxy S25 Ultra</h2>
     <p>Nový smartfón Galaxy S25 Ultra — výkonný čip, špičkové foto a nádherný displej.</p>
 
@@ -51,28 +51,92 @@ header select, header button{padding:6px; border-radius:6px; border:none;}
     </div>
 
     <div class="cards-grid" id="cardsGrid">
+      <!-- Apple -->
+      <div class="card">
+        <img src="iphone14promax.png" alt="iPhone 14 Pro Max">
+        <h3>iPhone 14 Pro Max</h3>
+        <p class="muted">2022 · 6.7"</p>
+      </div>
       <div class="card">
         <img src="iphone17promax.png" alt="iPhone 17 Pro Max">
         <h3>iPhone 17 Pro Max</h3>
         <p class="muted">2025 · 6.9"</p>
       </div>
+
+      <!-- Xiaomi -->
       <div class="card">
         <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra">
         <h3>Xiaomi 15 Ultra</h3>
         <p class="muted">2025 · 6.8"</p>
       </div>
+
+      <!-- Samsung Fold -->
       <div class="card">
-        <img src="galaxy_s25_ultra.jpg" alt="Galaxy S25 Ultra">
+        <img src="fold7.png" alt="Samsung Fold 7">
+        <h3>Samsung Fold 7</h3>
+        <p class="muted">2025 · 7.6" skladací</p>
+      </div>
+
+      <!-- Samsung Galaxy S series -->
+      <div class="card">
+        <img src="galaxys20.png" alt="Galaxy S20">
+        <h3>Galaxy S20</h3>
+        <p class="muted">2020 · 6.2"</p>
+      </div>
+      <div class="card">
+        <img src="galaxys21.png" alt="Galaxy S21">
+        <h3>Galaxy S21</h3>
+        <p class="muted">2021 · 6.2"</p>
+      </div>
+      <div class="card">
+        <img src="galaxys22.png" alt="Galaxy S22">
+        <h3>Galaxy S22</h3>
+        <p class="muted">2022 · 6.1"</p>
+      </div>
+      <div class="card">
+        <img src="galaxys23.png" alt="Galaxy S23">
+        <h3>Galaxy S23</h3>
+        <p class="muted">2023 · 6.1"</p>
+      </div>
+      <div class="card">
+        <img src="galaxys24.png" alt="Galaxy S24">
+        <h3>Galaxy S24</h3>
+        <p class="muted">2024 · 6.1"</p>
+      </div>
+      <div class="card">
+        <img src="galaxys25_ultra.png" alt="Galaxy S25 Ultra">
         <h3>Galaxy S25 Ultra</h3>
         <p class="muted">2025 · 6.9"</p>
       </div>
+
+      <!-- Honor -->
+      <div class="card">
+        <img src="honor90.png" alt="Honor 90">
+        <h3>Honor 90</h3>
+        <p class="muted">2025 · 6.7"</p>
+      </div>
+      <div class="card">
+        <img src="honormagic6.png" alt="Honor Magic6">
+        <h3>Honor Magic6</h3>
+        <p class="muted">2025 · 6.8"</p>
+      </div>
     </div>
 
+    <!-- Kalkulačka -->
     <div class="calc">
       <select id="calcModel">
-        <option value="galaxys25">Galaxy S25 Ultra</option>
+        <option value="iphone14">iPhone 14 Pro Max</option>
         <option value="iphone17">iPhone 17 Pro Max</option>
         <option value="xiaomi15">Xiaomi 15 Ultra</option>
+        <option value="fold7">Samsung Fold 7</option>
+        <option value="galaxys20">Galaxy S20</option>
+        <option value="galaxys21">Galaxy S21</option>
+        <option value="galaxys22">Galaxy S22</option>
+        <option value="galaxys23">Galaxy S23</option>
+        <option value="galaxys24">Galaxy S24</option>
+        <option value="galaxys25_ultra">Galaxy S25 Ultra</option>
+        <option value="honor90">Honor 90</option>
+        <option value="honormagic6">Honor Magic6</option>
       </select>
       <select id="calcStorage">
         <option value="128">128 GB</option>
@@ -82,6 +146,7 @@ header select, header button{padding:6px; border-radius:6px; border:none;}
       <div id="calcResult"></div>
     </div>
 
+    <!-- Komentáre -->
     <div class="comment-form">
       <input id="commentName" placeholder="Meno">
       <input id="commentText" placeholder="Komentár">
@@ -95,22 +160,33 @@ header select, header button{padding:6px; border-radius:6px; border:none;}
 /* Theme toggle */
 const themeBtn = document.getElementById('themeToggle');
 themeBtn.addEventListener('click', ()=> {
-  document.body.style.background = document.body.style.background==='var(--bg)' ? '#222' : 'var(--bg)';
-  document.body.style.color = document.body.style.color==='var(--text)' ? '#eee' : 'var(--text)';
-  themeBtn.textContent = themeBtn.textContent==='🌙' ? '☀️' : '🌙';
+  if(document.body.style.background==='var(--bg)' || document.body.style.background===''){
+    document.body.style.background='#222';
+    document.body.style.color='#eee';
+    themeBtn.textContent='☀️';
+  } else {
+    document.body.style.background='var(--bg)';
+    document.body.style.color='var(--text)';
+    themeBtn.textContent='🌙';
+  }
 });
 
-/* Calculator */
-const basePrices={galaxys25:1100, iphone17:1299, xiaomi15:899};
+/* Kalkulačka */
+const basePrices = {
+  iphone14:1099, iphone17:1299, xiaomi15:899, fold7:1399,
+  galaxys20:699, galaxys21:799, galaxys22:899, galaxys23:999,
+  galaxys24:1049, galaxys25_ultra:1100, honor90:799, honormagic6:999
+};
+
 document.getElementById('calcBtn').addEventListener('click',()=>{
   const model=document.getElementById('calcModel').value;
   const storage=parseInt(document.getElementById('calcStorage').value);
-  let price=basePrices[model]||(500);
+  let price=basePrices[model]||500;
   if(storage>128) price += (storage/128-1)*150;
   document.getElementById('calcResult').textContent=`Cena: ~ ${Math.round(price)} €`;
 });
 
-/* Comments */
+/* Komentáre */
 function renderComments(){
   const comments=JSON.parse(localStorage.getItem('comments')||'[]');
   const wrap=document.getElementById('commentsList');
@@ -127,7 +203,7 @@ document.getElementById('addCommentBtn').addEventListener('click',()=>{
 });
 renderComments();
 
-/* Simple search */
+/* Hľadanie kariet */
 document.getElementById('searchInput').addEventListener('input',function(){
   const v=this.value.toLowerCase();
   document.querySelectorAll('.cards-grid .card').forEach(card=>{
@@ -136,5 +212,6 @@ document.getElementById('searchInput').addEventListener('input',function(){
   });
 });
 </script>
+
 </body>
 </html>

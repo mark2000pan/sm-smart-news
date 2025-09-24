@@ -6,439 +6,135 @@
 <title>SM – Smart News</title>
 <style>
 :root{
-  --bg:#f0f0f0; --card:#fff; --accent:#2c3e50; --accent-2:#f39c12;
-  --muted:#555; --text:#222; --glass: rgba(255,255,255,0.06);
-  --transition: 300ms;
+  --bg:#f0f0f0; --card:#fff; --accent:#2c3e50;
+  --text:#222; --muted:#555; --transition:300ms;
 }
-:root[data-theme="dark"]{
-  --bg:#0f1113; --card:#151718; --accent:#f39c12; --accent-2:#2c3e50;
-  --muted:#bbb; --text:#e9e9e9;
-}
-
-*{box-sizing:border-box}
 body{
-  margin:0;font-family:Inter, system-ui, -apple-system, "Helvetica Neue", Arial;
-  background:linear-gradient(180deg,var(--bg), #e9eef6 200px);
-  color:var(--text); transition:background var(--transition), color var(--transition);
-  -webkit-font-smoothing:antialiased;
+  margin:0; font-family:Arial, sans-serif; background:var(--bg); color:var(--text);
 }
 header{
-  padding:20px 16px; background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  color:#fff; position:sticky; top:0; z-index:40;
-  display:flex; align-items:center; gap:16px; justify-content:space-between;
-  box-shadow:0 4px 18px rgba(0,0,0,0.12);
+  padding:16px; background:var(--accent); color:#fff; display:flex; justify-content:space-between; align-items:center;
 }
-.header-left{display:flex;gap:12px;align-items:center;}
-.site-title{font-weight:700;font-size:20px;letter-spacing:0.3px}
-.header-right{display:flex;gap:8px;align-items:center}
-#liveClock{font-weight:600;background:rgba(255,255,255,0.08);padding:6px 10px;border-radius:8px}
-
-@keyframes headerGradient {
-  0%{background-position:0%} 50%{background-position:100%} 100%{background-position:0%}
-}
-header{background-size:200% 100%; animation: headerGradient 8s linear infinite}
-
-.wrapper{max-width:1150px;margin:18px auto;padding:0 16px;display:grid;grid-template-columns:1fr 340px;gap:20px}
-@media (max-width:980px){.wrapper{grid-template-columns:1fr;padding:12px}}
-main{min-height:60vh}
-
-.article{
-  background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08);
-  overflow:hidden;position:relative;
-}
-.article .hero{
-  height:300px;border-radius:10px;overflow:hidden;margin-bottom:12px;position:relative;
-  will-change:transform,background-position;
-  background-position:center; background-size:cover; background-repeat:no-repeat;
-}
-.article h2{margin:0 0 8px 0;font-size:22px}
-.article p{line-height:1.45;color:var(--muted)}
-.skel{
-  background:linear-gradient(90deg,#eee,#ddd,#eee);
-  background-size:200% 100%; animation: shimmer 1.4s linear infinite;
-  height:100%; width:100%; position:absolute; top:0; left:0;
-}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-
-.controls{display:flex;gap:8px;align-items:center;margin:14px 0}
-#searchInput{padding:8px 10px;border-radius:8px;border:1px solid #ccc;flex:1}
-#brandFilter{padding:8px;border-radius:8px;border:1px solid #ccc;background:var(--card)}
-
-.card-inner{transform-origin:center; transition: transform .18s linear}
-.card:hover{box-shadow:0 14px 40px rgba(0,0,0,0.18)}
-.card img{width:100%;height:150px;border-radius:8px;object-fit:cover;margin-bottom:8px;display:block}
-.card h3{margin:6px 0 6px 0;font-size:16px}
-.card .muted{font-size:13px;color:var(--muted)}
-.card-controls{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px}
-
-/* like button & animation */
-.like-btn{background:var(--accent);color:#fff;border:none;padding:6px 10px;border-radius:8px;cursor:pointer}
-.like-anim{position:absolute;transform:translate(-50%,-50%);pointer-events:none;z-index:60;border-radius:50%}
-.confetti {position:absolute;width:8px;height:8px;border-radius:2px;opacity:0.95;}
-
-.fav-btn{background:transparent;border:none;cursor:pointer;font-size:18px;color:var(--muted)}
-.pill{display:inline-block;padding:6px 8px;border-radius:999px;border:1px solid rgba(0,0,0,0.06);font-size:13px}
+header select, header button{padding:6px; border-radius:6px; border:none;}
+.wrapper{max-width:800px; margin:20px auto; padding:0 16px;}
+.article{background:var(--card); padding:16px; border-radius:10px; margin-bottom:20px;}
+.article .hero{width:100%; height:200px; background-size:cover; background-position:center; border-radius:8px; margin-bottom:12px;}
+.cards-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+.card{background:var(--card); padding:12px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+.card img{width:100%; border-radius:6px; margin-bottom:6px;}
+.controls{display:flex; gap:8px; margin:12px 0;}
+.calc, .comment-form{margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;}
+.comment{border-top:1px solid #eee; padding:6px 0;}
 </style>
 </head>
 <body>
-<header>
-  <div class="header-left">
-    <div class="site-title">SM – Smart News</div>
-    <nav aria-label="Hlavné menu">
-      <select id="mainMenu" aria-label="Kategórie">
-        <option value="all">Všetky</option>
-        <option value="smartfony">Smartfóny</option>
-        <option value="hodinky">Hodinky</option>
-        <option value="mapy">Mapy</option>
-      </select>
-    </nav>
-  </div>
 
-  <div class="header-right">
-    <div id="liveClock" aria-live="polite">--:--:--</div>
-    <button id="themeToggle" aria-pressed="false" title="Prepni režim">
-      <span id="themeIcon">🌙</span>
-    </button>
+<header>
+  <div>SM – Smart News</div>
+  <div>
+    <select id="mainMenu">
+      <option value="all">Všetky</option>
+      <option value="smartfony">Smartfóny</option>
+    </select>
+    <button id="themeToggle">🌙</button>
   </div>
 </header>
 
 <div class="wrapper">
-  <main>
-    <article class="article fade-in" id="mainArticle">
-      <div class="hero" id="hero" data-src="galaxy_s25_ultra.jpg">
-        <div class="skel" id="heroSkel"></div>
+  <article class="article">
+    <div class="hero" id="hero" style="background-image:url('galaxy_s25_ultra.jpg')"></div>
+    <h2>Samsung Galaxy S25 Ultra</h2>
+    <p>Nový smartfón Galaxy S25 Ultra — výkonný čip, špičkové foto a nádherný displej.</p>
+
+    <div class="controls">
+      <input id="searchInput" placeholder="Hľadaj...">
+    </div>
+
+    <div class="cards-grid" id="cardsGrid">
+      <div class="card">
+        <img src="iphone17promax.png" alt="iPhone 17 Pro Max">
+        <h3>iPhone 17 Pro Max</h3>
+        <p class="muted">2025 · 6.9"</p>
       </div>
-      <h2>Samsung Galaxy S25 Ultra: Nová vlajková loď</h2>
-      <p style="margin-top:8px">Samsung predstavil svoj nový smartfón <strong>Galaxy S25 Ultra</strong> — výkonný čip, špičkové foto a nádherný displej. Nižšie nájdeš porovnania, komentáre a interaktívne prvky.</p>
-
-      <div class="controls" style="margin-top:14px">
-        <input id="searchInput" placeholder="Hľadaj v kartách..." />
-        <select id="brandFilter" aria-label="Filter značky">
-          <option value="all">Všetky značky</option>
-          <option value="Apple">Apple</option>
-          <option value="Samsung">Samsung</option>
-          <option value="Xiaomi">Xiaomi</option>
-        </select>
-        <div class="pill" id="favoritesCount">Obľúbené: 0</div>
+      <div class="card">
+        <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra">
+        <h3>Xiaomi 15 Ultra</h3>
+        <p class="muted">2025 · 6.8"</p>
       </div>
-      
-      <div class="cards-grid" id="cardsGrid" aria-live="polite">
-        <div class="card" data-brand="Apple" data-id="iphone14">
-          <div class="card-inner">
-            <img data-src="iphone14promax.png" alt="iPhone 14 Pro Max" class="card-img skel-img">
-            <h3>iPhone 14 Pro Max</h3>
-            <div class="muted">2022 · 6.7" · 128–1TB</div>
-            <div class="card-controls">
-              <div>
-                <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
-              </div>
-              <div>
-                <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" data-brand="Apple" data-id="iphone17">
-          <div class="card-inner">
-            <img data-src="iphone17promax.png" alt="iPhone 17 Pro Max" class="card-img skel-img">
-            <h3>iPhone 17 Pro Max</h3>
-            <div class="muted">2025 · 6.9" · 256–1TB</div>
-            <div class="card-controls">
-              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
-              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)">☆</button>
-            </div>
-          </div>
-        </div>
-
-                <div class="card" data-brand="Xiaomi" data-id="xiaomi15">
-          <div class="card-inner">
-            <img data-src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra" class="card-img skel-img">
-            <h3>Xiaomi 15 Ultra</h3>
-            <div class="muted">2025 · 6.8" AMOLED · 256–1TB</div>
-            <div class="card-controls">
-              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
-              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" data-brand="Samsung" data-id="fold7">
-          <div class="card-inner">
-            <img data-src="fold7.png" alt="Samsung Fold 7" class="card-img skel-img">
-            <h3>Samsung Fold 7</h3>
-            <div class="muted">2025 · 7.6" skladací</div>
-            <div class="card-controls">
-              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
-              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="card" data-brand="Samsung" data-id="galaxys25">
-          <div class="card-inner">
-            <img data-src="galaxy_s25_ultra.jpg" alt="Galaxy S25 Ultra" class="card-img skel-img">
-            <h3>Galaxy S25 Ultra</h3>
-            <div class="muted">2025 · 6.9" · Top foto</div>
-            <div class="card-controls">
-              <button class="like-btn" onclick="event.stopPropagation(); handleLike(this)">❤️ <span>0</span></button>
-              <button class="fav-btn" onclick="event.stopPropagation(); toggleFav(this)" aria-pressed="false">☆</button>
-            </div>
-          </div>
-        </div>
-
-      </div> <!-- koniec cards-grid -->
-
-      <section style="margin-top:16px">
-        <h3>Mini kalkulačka ceny</h3>
-        <div class="calc">
-          <select id="calcModel">
-            <option value="galaxys25">Galaxy S25 Ultra</option>
-            <option value="iphone17">iPhone 17 Pro Max</option>
-            <option value="xiaomi15">Xiaomi 15 Ultra</option>
-          </select>
-          <select id="calcStorage">
-            <option value="128">128 GB</option>
-            <option value="256">256 GB</option>
-            <option value="512">512 GB</option>
-            <option value="1024">1 TB</option>
-          </select>
-          <button id="calcBtn">Vypočítaj orientačnú cenu</button>
-          <div id="calcResult" style="font-weight:600"></div>
-        </div>
-      </section>
-
-      <section class="comments" aria-label="Komentáre">
-        <h3 style="margin-top:14px">Komentáre</h3>
-        <div class="comment-form" style="margin-top:8px">
-          <input id="commentName" placeholder="Tvoje meno" />
-          <textarea id="commentText" placeholder="Napíš komentár..." rows="3"></textarea>
-          <button id="addCommentBtn">Pridať komentár</button>
-        </div>
-        <div id="commentsList"></div>
-      </section>
-
-    </article>
-  </main>
-
-  <aside class="sidebar">
-    <div class="right-card">
-      <h4>Galaxy Watch 8</h4>
-      <button class="open-btn" id="openPanelBtn">Zobraziť info</button>
+      <div class="card">
+        <img src="galaxy_s25_ultra.jpg" alt="Galaxy S25 Ultra">
+        <h3>Galaxy S25 Ultra</h3>
+        <p class="muted">2025 · 6.9"</p>
+      </div>
     </div>
 
-    <div class="right-card">
-      <h4>Mini ticker</h4>
-      <div class="small-ticker"><p>🔔 Novinka: S25 Ultra dostupný | 🔎 Tip: iPhone 17 recenzia | ✨ Dnes: 3 nové updaty</p></div>
+    <div class="calc">
+      <select id="calcModel">
+        <option value="galaxys25">Galaxy S25 Ultra</option>
+        <option value="iphone17">iPhone 17 Pro Max</option>
+        <option value="xiaomi15">Xiaomi 15 Ultra</option>
+      </select>
+      <select id="calcStorage">
+        <option value="128">128 GB</option>
+        <option value="256">256 GB</option>
+      </select>
+      <button id="calcBtn">Vypočítaj cenu</button>
+      <div id="calcResult"></div>
     </div>
 
-    <div class="right-card">
-      <h4>Obľúbené</h4>
-      <div id="favoritesList">Žiadne položky</div>
+    <div class="comment-form">
+      <input id="commentName" placeholder="Meno">
+      <input id="commentText" placeholder="Komentár">
+      <button id="addCommentBtn">Pridať</button>
     </div>
-  </aside>
+    <div id="commentsList"></div>
+  </article>
 </div>
-<!-- panel watch -->
-<div class="panel" id="watchPanel" aria-hidden="true">
-  <button id="closePanel" style="float:right;background:none;border:none;font-size:18px;cursor:pointer">✕</button>
-  <h3>Samsung Galaxy Watch 8</h3>
-  <div style="margin-top:8px">
-    <img id="watchImg" src="galaxywatch8.png" alt="Galaxy Watch 8">
-    <p class="muted">Displej 1.6" · GPS · SpO₂ · NFC</p>
-  </div>
-</div>
-
-<!-- breaking news -->
-<div id="breaking" role="status">
-  🚨 <strong>Breaking:</strong> S25 Ultra rekordné predaje 
-  <small id="breakCountdown">10</small>s
-</div>
-
-<!-- easter egg -->
-<div id="egg">
-  <strong>Tajná správa:</strong> Konami aktivované — gratulujem! 🎉
-</div>
-
-<!-- element for confetti -->
-<div id="confettiRoot" style="position:fixed;left:0;top:0;right:0;bottom:0;pointer-events:none;overflow:visible;z-index:9999"></div>
 
 <script>
-/* ================ UTILITY: LocalStorage helpers ================ */
-const LS = {
-  get(key, fallback){ try{ return JSON.parse(localStorage.getItem(key)) ?? fallback }catch(e){return fallback} },
-  set(key, val){ localStorage.setItem(key, JSON.stringify(val)) }
-};
-
-/* ================ LIVE CLOCK ================ */
-function startClock(){
-  const el = document.getElementById('liveClock');
-  function tick(){
-    const d = new Date();
-    const fmt = d.toLocaleTimeString();
-    el.textContent = fmt;
-  }
-  tick(); setInterval(tick,1000);
-}
-startClock();
-
-/* ================ THEME TOGGLE (with memory) ================ */
+/* Theme toggle */
 const themeBtn = document.getElementById('themeToggle');
-const themeIcon = document.getElementById('themeIcon');
-function setTheme(t){
-  document.documentElement.setAttribute('data-theme', t);
-  LS.set('theme', t);
-  themeBtn.setAttribute('aria-pressed', t==='dark');
-  themeIcon.textContent = t==='dark' ? '☀️' : '🌙';
-  themeIcon.style.transform = 'scale(1.15)';
-  setTimeout(()=>themeIcon.style.transform='scale(1)',200);
-}
-const savedTheme = LS.get('theme','light');
-setTheme(savedTheme);
-themeBtn.addEventListener('click', ()=> setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark'));
-
-/* ================ SKELETON LOADING + PARALLAX HERO ================ */
-function loadHero(){
-  const hero = document.getElementById('hero');
-  const s = hero.getAttribute('data-src');
-  const skel = document.getElementById('heroSkel');
-  const img = new Image();
-  img.src = s; img.alt = 'Hero image';
-  img.onload = ()=>{ hero.style.backgroundImage = `url('${s}')`; skel.remove(); }
-}
-loadHero();
-window.addEventListener('scroll', ()=> {
-  const hero = document.getElementById('hero');
-  const rect = hero.getBoundingClientRect();
-  if(rect.top < window.innerHeight && rect.bottom > 0){
-    const pos = Math.round((rect.top/window.innerHeight)*50);
-    hero.style.backgroundPosition = `center ${50 - pos}%`;
-  }
-});
-/* ================ LAZY LOAD CARD IMAGES (skeleton) ================ */
-function lazyLoadCardImgs(){
-  document.querySelectorAll('.skel-img').forEach(el=>{
-    const src = el.getAttribute('data-src');
-    const image = new Image();
-    image.src = src;
-    image.onload = ()=>{ el.src = src; el.classList.remove('skel-img'); el.style.display='block'; }
-  });
-}
-lazyLoadCardImgs();
-
-
-/* ================ FAVORITES (LocalStorage) ================ */
-function toggleFav(btn){
-  const card = btn.closest('.card');
-  const id = card.dataset.id;
-  let favs = LS.get('favs', []);
-  if(favs.includes(id)){
-    favs = favs.filter(x=>x!==id); btn.textContent='☆'; btn.setAttribute('aria-pressed','false');
-  } else {
-    favs.push(id); btn.textContent='★'; btn.setAttribute('aria-pressed','true');
-  }
-  LS.set('favs', favs);
-  renderFavs();
-}
-function renderFavs(){
-  const favList = document.getElementById('favoritesList');
-  const favs = LS.get('favs', []);
-  const grid = document.getElementById('cardsGrid');
-  document.getElementById('favoritesCount').textContent = `Obľúbené: ${favs.length}`;
-  if(favs.length===0){ favList.textContent='Žiadne položky'; return; }
-  favList.innerHTML = favs.map(id => {
-    const el = grid.querySelector(`.card[data-id="${id}"] h3`);
-    return el ? `<div>${el.textContent}</div>` : '';
-  }).join('');
-}
-renderFavs();
-
-/* ================ FILTER & SEARCH ================== */
-document.getElementById('searchInput').addEventListener('input', function(){
-  const v = this.value.toLowerCase();
-  document.querySelectorAll('.cards-grid .card').forEach(card=>{
-    const txt = card.querySelector('h3').textContent.toLowerCase();
-    card.style.display = txt.includes(v) ? '' : 'none';
-  });
-});
-document.getElementById('brandFilter').addEventListener('change', function(){
-  const v = this.value;
-  document.querySelectorAll('.cards-grid .card').forEach(card=>{
-    if(v === 'all' ) { card.style.display = ''; return; }
-    card.style.display = (card.dataset.brand === v) ? '' : 'none';
-  });
+themeBtn.addEventListener('click', ()=> {
+  document.body.style.background = document.body.style.background==='var(--bg)' ? '#222' : 'var(--bg)';
+  document.body.style.color = document.body.style.color==='var(--text)' ? '#eee' : 'var(--text)';
+  themeBtn.textContent = themeBtn.textContent==='🌙' ? '☀️' : '🌙';
 });
 
-/* ================ CALCULATOR ================== */
-const basePrices = { galaxys25:1100, iphone17:1299, xiaomi15:899 };
-document.getElementById('calcBtn').addEventListener('click', ()=>{
-  const model = document.getElementById('calcModel').value;
-  const storage = parseInt(document.getElementById('calcStorage').value,10);
-  let price = basePrices[model] || 500;
-  if(storage>128) price += (storage/128 - 1)*150;
-  document.getElementById('calcResult').textContent = `Orientačná cena: ~ ${Math.round(price)} €`;
+/* Calculator */
+const basePrices={galaxys25:1100, iphone17:1299, xiaomi15:899};
+document.getElementById('calcBtn').addEventListener('click',()=>{
+  const model=document.getElementById('calcModel').value;
+  const storage=parseInt(document.getElementById('calcStorage').value);
+  let price=basePrices[model]||(500);
+  if(storage>128) price += (storage/128-1)*150;
+  document.getElementById('calcResult').textContent=`Cena: ~ ${Math.round(price)} €`;
 });
 
-/* ================ COMMENTS (LocalStorage) ================== */
+/* Comments */
 function renderComments(){
-  const lis = LS.get('comments', []);
-  const wrap = document.getElementById('commentsList');
-  if(!lis.length) return wrap.innerHTML = '<div class="muted">Žiadne komentáre</div>';
-  wrap.innerHTML = lis.map(c => `<div class="comment"><strong>${escapeHtml(c.name)}</strong> <div style="font-size:12px;color:var(--muted)">${new Date(c.time).toLocaleString()}</div><p>${escapeHtml(c.text)}</p></div>`).join('');
+  const comments=JSON.parse(localStorage.getItem('comments')||'[]');
+  const wrap=document.getElementById('commentsList');
+  wrap.innerHTML = comments.map(c=>`<div class="comment"><strong>${c.name}</strong>: ${c.text}</div>`).join('');
 }
-function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-document.getElementById('addCommentBtn').addEventListener('click', ()=>{
-  const name = document.getElementById('commentName').value || 'Anonym';
-  const text = document.getElementById('commentText').value || '';
-  if(!text.trim()) return alert('Napíš prosím komentár.');
-  const arr = LS.get('comments', []);
-  arr.unshift({name, text, time: Date.now()});
-  LS.set('comments', arr);
-  document.getElementById('commentText').value='';
+document.getElementById('addCommentBtn').addEventListener('click',()=>{
+  const name=document.getElementById('commentName').value||'Anonym';
+  const text=document.getElementById('commentText').value||'';
+  if(!text.trim()) return;
+  const arr=JSON.parse(localStorage.getItem('comments')||'[]');
+  arr.unshift({name,text});
+  localStorage.setItem('comments',JSON.stringify(arr));
   renderComments();
 });
 renderComments();
 
-/* ================ PANEL WATCH (open/close) ================== */
-document.getElementById('openPanelBtn').addEventListener('click', ()=>{
-  document.getElementById('watchPanel').classList.add('open');
-  document.getElementById('watchPanel').setAttribute('aria-hidden','false');
-});
-document.getElementById('closePanel').addEventListener('click', ()=>{
-  document.getElementById('watchPanel').classList.remove('open');
-  document.getElementById('watchPanel').setAttribute('aria-hidden','true');
-});
-
-/* ================ BREAKING NEWS POPUP with countdown ================ */
-function showBreaking(){
-  const el = document.getElementById('breaking');
-  const cd = document.getElementById('breakCountdown');
-  let t = 10;
-  el.style.display = 'block';
-  const interval = setInterval(()=>{ t--; cd.textContent = t; if(t<=0){ clearInterval(interval); el.style.display='none'; } },1000);
-}
-setTimeout(showBreaking, 3500);
-
-
-/* ================ 3D TILT & MOBILE ================== */
-document.querySelectorAll('.card').forEach(card=>{
-  card.addEventListener('mousemove', e=>{
-    const rect = card.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const cx = rect.width/2, cy = rect.height/2;
-    const rx = ((y - cy) / cy) * -6;
-    const ry = ((x - cx) / cx) * 6;
-    card.querySelector('.card-inner').style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+/* Simple search */
+document.getElementById('searchInput').addEventListener('input',function(){
+  const v=this.value.toLowerCase();
+  document.querySelectorAll('.cards-grid .card').forEach(card=>{
+    const txt = card.querySelector('h3').textContent.toLowerCase();
+    card.style.display = txt.includes(v)?'':'none';
   });
-  card.addEventListener('mouseleave', ()=> card.querySelector('.card-inner').style.transform = '');
-  card.addEventListener('touchstart', ()=> card.style.transform='scale(1.02)');
-  card.addEventListener('touchend', ()=> card.style.transform='');
 });
-
-/* ================ FINISH ================== */
-console.log('SM – Mega verzia načítaná. Konami kód pre tajnú správu (↑↑↓↓←→←→BA).');
 </script>
 </body>
 </html>
-
-

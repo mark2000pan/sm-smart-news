@@ -1,217 +1,446 @@
 <!DOCTYPE html>
 <html lang="sk">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>SM – Smart News</title>
 <style>
-:root{
-  --bg:#f0f0f0; --card:#fff; --accent:#2c3e50;
-  --text:#222; --muted:#555; --transition:300ms;
-}
-body{
-  margin:0; font-family:Arial,sans-serif; background:var(--bg); color:var(--text);
-}
-header{
-  padding:16px; background:var(--accent); color:#fff; display:flex; justify-content:space-between; align-items:center;
-}
-header select, header button{padding:6px; border-radius:6px; border:none;}
-.wrapper{max-width:900px; margin:20px auto; padding:0 16px;}
-.article{background:var(--card); padding:16px; border-radius:10px; margin-bottom:20px;}
-.article .hero{width:100%; height:200px; background-size:cover; background-position:center; border-radius:8px; margin-bottom:12px;}
-.cards-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:12px;}
-.card{background:var(--card); padding:12px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
-.card img{width:100%; border-radius:6px; margin-bottom:6px;}
-.controls{display:flex; gap:8px; margin:12px 0;}
-.calc, .comment-form{margin-top:12px; display:flex; gap:6px; flex-wrap:wrap;}
-.comment{border-top:1px solid #eee; padding:6px 0;}
+  :root{
+    --bg: #f0f0f0;
+    --card: #ffffff;
+    --accent: #2c3e50;
+    --accent-contrast: #ffffff;
+    --text: #222222;
+    --muted: #555555;
+    --radius: 10px;
+    --gap: 12px;
+    --transition: 240ms ease;
+  }
+
+  /* Dark theme variables */
+  .dark{
+    --bg: #0f1113;
+    --card: #131516;
+    --accent: #0b78a5;
+    --accent-contrast: #fff;
+    --text: #e9eef2;
+    --muted: #9aa6b2;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg);
+    color:var(--text);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    transition: background var(--transition), color var(--transition);
+    line-height:1.4;
+  }
+
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:16px;
+    background:var(--accent);
+    color:var(--accent-contrast);
+  }
+  .brand{font-weight:700; font-size:1.05rem; letter-spacing:0.2px}
+  .controls-inline{display:flex; gap:8px; align-items:center}
+  .controls-inline select, .controls-inline button{
+    padding:8px 10px; border-radius:8px; border:0; background:rgba(255,255,255,0.08); color:inherit;
+    cursor:pointer; transition:transform var(--transition);
+  }
+  .controls-inline button:hover{transform:translateY(-2px)}
+
+  .wrapper{max-width:1000px; margin:20px auto; padding:0 16px;}
+
+  article.card{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:16px;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.06);
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+
+  .hero{
+    width:100%;
+    height:220px;
+    border-radius:8px;
+    background-size:cover;
+    background-position:center;
+    margin-bottom:12px;
+    overflow:hidden;
+  }
+
+  h1,h2,h3{margin:0 0 8px 0}
+  p{margin:0 0 12px 0; color:var(--muted)}
+
+  .search-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0}
+  .search-row input[type="search"]{
+    flex:1; min-width:160px; padding:10px 12px; border-radius:8px; border:1px solid rgba(0,0,0,0.06);
+    background:transparent; color:var(--text);
+  }
+
+  /* Responsive grid */
+  .cards-grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap:var(--gap);
+    margin-top:12px;
+  }
+
+  .mini-card{
+    background:var(--card);
+    border-radius:8px;
+    padding:10px;
+    box-shadow: 0 2px 6px rgba(2,6,23,0.04);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .mini-card:hover{ transform: translateY(-6px); box-shadow:0 10px 24px rgba(2,6,23,0.08) }
+  .mini-card img{ width:100%; display:block; border-radius:6px; margin-bottom:8px; height:140px; object-fit:cover }
+  .mini-card h3{font-size:1rem; margin-bottom:6px}
+  .muted{color:var(--muted); font-size:0.9rem}
+
+  /* Calculator & comments */
+  .tools{display:flex; gap:12px; flex-wrap:wrap; margin-top:14px}
+  .calc, .comment-form{background:rgba(0,0,0,0.03); padding:10px; border-radius:8px; display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .calc select, .comment-form input, .calc button, .comment-form button{padding:8px 10px; border-radius:8px; border:1px solid rgba(0,0,0,0.06); background:transparent; color:var(--text)}
+  .calc button, .comment-form button{cursor:pointer; border:0; background:var(--accent); color:var(--accent-contrast)}
+  #calcResult{min-width:120px; font-weight:600}
+
+  .comments{margin-top:12px}
+  .comment{padding:10px 8px; border-top:1px solid rgba(0,0,0,0.04); font-size:0.95rem}
+  .comment time{font-size:0.8rem; color:var(--muted); margin-left:6px}
+
+  /* Small screens tweaks */
+  @media (max-width:520px){
+    .hero{height:160px}
+    .mini-card img{height:110px}
+    header{padding:12px}
+  }
+
+  /* accessibility focus */
+  :focus{outline:3px solid rgba(11,120,165,0.16); outline-offset:2px}
 </style>
 </head>
 <body>
-
 <header>
-  <div>SM – Smart News</div>
-  <div>
-    <select id="mainMenu">
+  <div class="brand" id="brand">SM – Smart News</div>
+  <div class="controls-inline" role="toolbar" aria-label="Hlavné ovládanie">
+    <label for="mainMenu" class="sr-only" style="display:none">Menu</label>
+    <select id="mainMenu" aria-label="Výber kategórie">
       <option value="all">Všetky</option>
       <option value="smartfony">Smartfóny</option>
     </select>
-    <button id="themeToggle">🌙</button>
+    <button id="themeToggle" aria-pressed="false" title="Prepnutie svetlého/tmavého módu">🌙</button>
   </div>
 </header>
 
-<div class="wrapper">
-  <article class="article">
-    <div class="hero" id="hero" style="background-image:url('galaxys25_ultra.png')"></div>
-    <h2>Samsung Galaxy S25 Ultra</h2>
+<main class="wrapper" id="main">
+  <article class="card" aria-labelledby="headline">
+    <div class="hero" id="hero" role="img" aria-label="Samsung Galaxy S25 Ultra" style="background-image:url('galaxys25_ultra.png')"></div>
+    <h2 id="headline">Samsung Galaxy S25 Ultra</h2>
     <p>Nový smartfón Galaxy S25 Ultra — výkonný čip, špičkové foto a nádherný displej.</p>
 
-    <div class="controls">
-      <input id="searchInput" placeholder="Hľadaj...">
+    <div class="search-row" aria-hidden="false">
+      <input type="search" id="searchInput" placeholder="Hľadaj... (napr. iPhone, Galaxy, Xiaomi)" aria-label="Hľadaj karty" />
     </div>
 
-    <div class="cards-grid" id="cardsGrid">
-      <!-- Apple -->
-      <div class="card">
-        <img src="iphone14promax.png" alt="iPhone 14 Pro Max">
+    <section class="cards-grid" id="cardsGrid" aria-label="Zoznam telefónov">
+      <!-- Karty sú generované JS (fallback obsah pre neaktívny JS) -->
+      <div class="mini-card" data-model="iphone14">
+        <img src="iphone14promax.png" alt="iPhone 14 Pro Max" />
         <h3>iPhone 14 Pro Max</h3>
         <p class="muted">2022 · 6.7"</p>
       </div>
-      <div class="card">
-        <img src="iphone17promax.png" alt="iPhone 17 Pro Max">
+      <div class="mini-card" data-model="iphone17">
+        <img src="iphone17promax.png" alt="iPhone 17 Pro Max" />
         <h3>iPhone 17 Pro Max</h3>
         <p class="muted">2025 · 6.9"</p>
       </div>
-
-      <!-- Xiaomi -->
-      <div class="card">
-        <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra">
+      <div class="mini-card" data-model="xiaomi15">
+        <img src="xiaomi15ultra.png" alt="Xiaomi 15 Ultra" />
         <h3>Xiaomi 15 Ultra</h3>
         <p class="muted">2025 · 6.8"</p>
       </div>
-
-      <!-- Samsung Fold -->
-      <div class="card">
-        <img src="fold7.png" alt="Samsung Fold 7">
+      <div class="mini-card" data-model="fold7">
+        <img src="fold7.png" alt="Samsung Fold 7" />
         <h3>Samsung Fold 7</h3>
         <p class="muted">2025 · 7.6" skladací</p>
       </div>
-
-      <!-- Samsung Galaxy S series -->
-      <div class="card">
-        <img src="galaxys20.png" alt="Galaxy S20">
+      <!-- Galaxy S series -->
+      <div class="mini-card" data-model="galaxys20">
+        <img src="galaxys20.png" alt="Galaxy S20" />
         <h3>Galaxy S20</h3>
         <p class="muted">2020 · 6.2"</p>
       </div>
-      <div class="card">
-        <img src="galaxys21.png" alt="Galaxy S21">
+      <div class="mini-card" data-model="galaxys21">
+        <img src="galaxys21.png" alt="Galaxy S21" />
         <h3>Galaxy S21</h3>
         <p class="muted">2021 · 6.2"</p>
       </div>
-      <div class="card">
-        <img src="galaxys22.png" alt="Galaxy S22">
+      <div class="mini-card" data-model="galaxys22">
+        <img src="galaxys22.png" alt="Galaxy S22" />
         <h3>Galaxy S22</h3>
         <p class="muted">2022 · 6.1"</p>
       </div>
-      <div class="card">
-        <img src="galaxys23.png" alt="Galaxy S23">
+      <div class="mini-card" data-model="galaxys23">
+        <img src="galaxys23.png" alt="Galaxy S23" />
         <h3>Galaxy S23</h3>
         <p class="muted">2023 · 6.1"</p>
       </div>
-      <div class="card">
-        <img src="galaxys24.png" alt="Galaxy S24">
+      <div class="mini-card" data-model="galaxys24">
+        <img src="galaxys24.png" alt="Galaxy S24" />
         <h3>Galaxy S24</h3>
         <p class="muted">2024 · 6.1"</p>
       </div>
-      <div class="card">
-        <img src="galaxys25_ultra.png" alt="Galaxy S25 Ultra">
+      <div class="mini-card" data-model="galaxys25_ultra">
+        <img src="galaxys25_ultra.png" alt="Galaxy S25 Ultra" />
         <h3>Galaxy S25 Ultra</h3>
         <p class="muted">2025 · 6.9"</p>
       </div>
-
-      <!-- Honor -->
-      <div class="card">
-        <img src="honor90.png" alt="Honor 90">
+      <div class="mini-card" data-model="honor90">
+        <img src="honor90.png" alt="Honor 90" />
         <h3>Honor 90</h3>
         <p class="muted">2025 · 6.7"</p>
       </div>
-      <div class="card">
-        <img src="honormagic6.png" alt="Honor Magic6">
+      <div class="mini-card" data-model="honormagic6">
+        <img src="honormagic6.png" alt="Honor Magic6" />
         <h3>Honor Magic6</h3>
         <p class="muted">2025 · 6.8"</p>
       </div>
+    </section>
+
+    <div class="tools" aria-label="Nástroje">
+      <div class="calc" role="region" aria-label="Kalkulačka cien">
+        <label for="calcModel" class="sr-only" style="display:none">Model</label>
+        <select id="calcModel" aria-label="Vyber model">
+          <option value="iphone14">iPhone 14 Pro Max</option>
+          <option value="iphone17">iPhone 17 Pro Max</option>
+          <option value="xiaomi15">Xiaomi 15 Ultra</option>
+          <option value="fold7">Samsung Fold 7</option>
+          <option value="galaxys20">Galaxy S20</option>
+          <option value="galaxys21">Galaxy S21</option>
+          <option value="galaxys22">Galaxy S22</option>
+          <option value="galaxys23">Galaxy S23</option>
+          <option value="galaxys24">Galaxy S24</option>
+          <option value="galaxys25_ultra">Galaxy S25 Ultra</option>
+          <option value="honor90">Honor 90</option>
+          <option value="honormagic6">Honor Magic6</option>
+        </select>
+
+        <label for="calcStorage" class="sr-only" style="display:none">Úložisko</label>
+        <select id="calcStorage" aria-label="Vyber veľkosť úložiska">
+          <option value="128">128 GB</option>
+          <option value="256">256 GB</option>
+          <option value="512">512 GB</option>
+        </select>
+
+        <button id="calcBtn">Vypočítaj cenu</button>
+        <div id="calcResult" aria-live="polite" role="status"></div>
+      </div>
+
+      <div class="comment-form" role="region" aria-label="Komentáre">
+        <input id="commentName" placeholder="Meno" aria-label="Meno" maxlength="40" />
+        <input id="commentText" placeholder="Komentár" aria-label="Komentár" maxlength="400" />
+        <button id="addCommentBtn">Pridať</button>
+      </div>
     </div>
 
-    <!-- Kalkulačka -->
-    <div class="calc">
-      <select id="calcModel">
-        <option value="iphone14">iPhone 14 Pro Max</option>
-        <option value="iphone17">iPhone 17 Pro Max</option>
-        <option value="xiaomi15">Xiaomi 15 Ultra</option>
-        <option value="fold7">Samsung Fold 7</option>
-        <option value="galaxys20">Galaxy S20</option>
-        <option value="galaxys21">Galaxy S21</option>
-        <option value="galaxys22">Galaxy S22</option>
-        <option value="galaxys23">Galaxy S23</option>
-        <option value="galaxys24">Galaxy S24</option>
-        <option value="galaxys25_ultra">Galaxy S25 Ultra</option>
-        <option value="honor90">Honor 90</option>
-        <option value="honormagic6">Honor Magic6</option>
-      </select>
-      <select id="calcStorage">
-        <option value="128">128 GB</option>
-        <option value="256">256 GB</option>
-      </select>
-      <button id="calcBtn">Vypočítaj cenu</button>
-      <div id="calcResult"></div>
-    </div>
+    <section class="comments" id="commentsList" aria-label="Zoznam komentárov">
+      <!-- komentáre renderuje JS -->
+    </section>
 
-    <!-- Komentáre -->
-    <div class="comment-form">
-      <input id="commentName" placeholder="Meno">
-      <input id="commentText" placeholder="Komentár">
-      <button id="addCommentBtn">Pridať</button>
-    </div>
-    <div id="commentsList"></div>
   </article>
-</div>
+</main>
 
 <script>
-/* Theme toggle */
-const themeBtn = document.getElementById('themeToggle');
-themeBtn.addEventListener('click', ()=> {
-  if(document.body.style.background==='var(--bg)' || document.body.style.background===''){
-    document.body.style.background='#222';
-    document.body.style.color='#eee';
-    themeBtn.textContent='☀️';
-  } else {
-    document.body.style.background='var(--bg)';
-    document.body.style.color='var(--text)';
-    themeBtn.textContent='🌙';
+/* ============================
+   Utility / small helpers
+   ============================ */
+const qs = (sel, ctx = document) => ctx.querySelector(sel);
+const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+const escapeHTML = (s = '') => String(s)
+  .replaceAll('&','&amp;')
+  .replaceAll('<','&lt;')
+  .replaceAll('>','&gt;')
+  .replaceAll('"','&quot;')
+  .replaceAll("'", '&#39;');
+
+/* ============================
+   Theme handling
+   ============================ */
+const themeToggleBtn = qs('#themeToggle');
+const THEME_KEY = 'sm_theme';
+
+function applyTheme(theme){
+  if(theme === 'dark') document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+  themeToggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  themeToggleBtn.setAttribute('aria-pressed', theme === 'dark');
+  localStorage.setItem(THEME_KEY, theme);
+}
+
+function initTheme(){
+  const saved = localStorage.getItem(THEME_KEY);
+  if(saved) applyTheme(saved);
+  else {
+    // prefer user's system setting if no saved choice
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(prefersDark ? 'dark' : 'light');
   }
+}
+themeToggleBtn.addEventListener('click', () => {
+  const cur = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
 });
 
-/* Kalkulačka */
+/* init theme immediately */
+initTheme();
+
+/* ============================
+   Base prices & calc logic
+   ============================ */
 const basePrices = {
   iphone14:1099, iphone17:1299, xiaomi15:899, fold7:1399,
   galaxys20:699, galaxys21:799, galaxys22:899, galaxys23:999,
   galaxys24:1049, galaxys25_ultra:1100, honor90:799, honormagic6:999
 };
 
-document.getElementById('calcBtn').addEventListener('click',()=>{
-  const model=document.getElementById('calcModel').value;
-  const storage=parseInt(document.getElementById('calcStorage').value);
-  let price=basePrices[model]||500;
-  if(storage>128) price += (storage/128-1)*150;
-  document.getElementById('calcResult').textContent=`Cena: ~ ${Math.round(price)} €`;
+function calculatePrice(model, storage){
+  // base price for 128GB
+  const base = basePrices[model] ?? 500;
+  // price step: for each additional 128GB add 150 (but with diminishing returns)
+  const steps = Math.max(0, Math.round((storage - 128) / 128));
+  // diminishing increment: 150 for first step, 120 for second, 90 for third...
+  let extra = 0;
+  for(let i=0;i<steps;i++){
+    extra += Math.max(30, 150 - i*30);
+  }
+  return Math.round(base + extra);
+}
+
+/* bind calc */
+qs('#calcBtn').addEventListener('click', () => {
+  const model = qs('#calcModel').value;
+  const storage = parseInt(qs('#calcStorage').value, 10) || 128;
+  const price = calculatePrice(model, storage);
+  qs('#calcResult').textContent = `Cena: ~ ${price} €`;
 });
 
-/* Komentáre */
-function renderComments(){
-  const comments=JSON.parse(localStorage.getItem('comments')||'[]');
-  const wrap=document.getElementById('commentsList');
-  wrap.innerHTML = comments.map(c=>`<div class="comment"><strong>${c.name}</strong>: ${c.text}</div>`).join('');
+/* ============================
+   Comments (localStorage) with sanitization
+   ============================ */
+const COMMENTS_KEY = 'sm_comments';
+const MAX_COMMENTS = 200;
+const MAX_COMMENT_LENGTH = 400;
+
+function loadComments(){
+  try{
+    const raw = localStorage.getItem(COMMENTS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){
+    console.warn('comments load failed', e);
+    return [];
+  }
 }
-document.getElementById('addCommentBtn').addEventListener('click',()=>{
-  const name=document.getElementById('commentName').value||'Anonym';
-  const text=document.getElementById('commentText').value||'';
-  if(!text.trim()) return;
-  const arr=JSON.parse(localStorage.getItem('comments')||'[]');
-  arr.unshift({name,text});
-  localStorage.setItem('comments',JSON.stringify(arr));
+
+function saveComments(arr){
+  try{
+    localStorage.setItem(COMMENTS_KEY, JSON.stringify(arr.slice(0, MAX_COMMENTS)));
+  }catch(e){
+    console.warn('comments save failed', e);
+  }
+}
+
+function formatTimeIso(ts){
+  const d = new Date(ts);
+  return d.toLocaleString('sk-SK', {year:'numeric',month:'short',day:'2-digit', hour:'2-digit', minute:'2-digit'});
+}
+
+function renderComments(){
+  const cont = qs('#commentsList');
+  const list = loadComments();
+  if(list.length === 0){
+    cont.innerHTML = '<div class="comment">Zatiaľ žiadne komentáre. Buď prvý!</div>';
+    return;
+  }
+  cont.innerHTML = list.map(c => {
+    const name = escapeHTML(c.name || 'Anonym');
+    const text = escapeHTML(c.text || '');
+    const time = escapeHTML(formatTimeIso(c.ts || Date.now()));
+    return `<div class="comment"><strong>${name}</strong> <time datetime="${new Date(c.ts).toISOString()}">${time}</time><div>${text}</div></div>`;
+  }).join('');
+}
+
+/* add comment */
+qs('#addCommentBtn').addEventListener('click', () => {
+  const name = qs('#commentName').value.trim().substring(0,40) || 'Anonym';
+  const text = qs('#commentText').value.trim().substring(0, MAX_COMMENT_LENGTH);
+  if(!text) return;
+  const comments = loadComments();
+  comments.unshift({name, text, ts: Date.now()});
+  saveComments(comments);
+  qs('#commentText').value = '';
   renderComments();
 });
-renderComments();
 
-/* Hľadanie kariet */
-document.getElementById('searchInput').addEventListener('input',function(){
-  const v=this.value.toLowerCase();
-  document.querySelectorAll('.cards-grid .card').forEach(card=>{
-    const txt = card.querySelector('h3').textContent.toLowerCase();
-    card.style.display = txt.includes(v)?'':'none';
-  });
+/* allow Enter to submit comment when focused on commentText */
+qs('#commentText').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    qs('#addCommentBtn').click();
+  }
 });
-</script>
 
+/* ============================
+   Search / Filter
+   ============================ */
+qs('#searchInput').addEventListener('input', function(){
+  const v = this.value.trim().toLowerCase();
+  const cards = qsa('.cards-grid .mini-card');
+  let visible = 0;
+  cards.forEach(card => {
+    const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
+    const model = (card.dataset.model || '').toLowerCase();
+    const ok = !v || title.includes(v) || model.includes(v);
+    card.style.display = ok ? '' : 'none';
+    if(ok) visible++;
+  });
+  // optional: show "no results" message
+  if(visible === 0){
+    if(!qs('#noResults')){
+      const el = document.createElement('div');
+      el.id = 'noResults';
+      el.className = 'mini-card';
+      el.innerHTML = '<h3>Žiadne výsledky</h3><p class="muted">Skús iný výraz.</p>';
+      qs('#cardsGrid').appendChild(el);
+    }
+  } else {
+    const nr = qs('#noResults');
+    if(nr) nr.remove();
+  }
+});
+
+/* quick accessibility: focus search on load */
+window.addEventListener('load', () => {
+  // render comments
+  renderComments();
+  // set initial calc result
+  qs('#calcResult').textContent = '';
+  // set focus to search for convenience
+  qs('#searchInput').focus();
+});
+
+/* ============================
+   Progressive enhancement note:
+   If you plan to split into modules, move CSS to style.css and JS to app.js
+   ============================ */
+</script>
 </body>
 </html>
+
